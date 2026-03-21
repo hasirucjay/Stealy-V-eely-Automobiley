@@ -597,6 +597,10 @@ namespace Stand
 		{
 			Tutorial::setState(TUT_OPEN + 1);
 		}
+		if (Input::keyboard_and_mouse && Tutorial::state < TUT_UP)
+		{
+			Tutorial::setState(TUT_UP);
+		}
 		openCloseCommon(thread_context, true);
 		auto* list = getCurrentUiList();
 		if (list != nullptr)

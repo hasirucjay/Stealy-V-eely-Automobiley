@@ -852,10 +852,21 @@ namespace Stand
 		}
 
 		g_auth.discoverActivationKey();
+#if defined(STAND_BYPASS_AUTH) || defined(STAND_DEV)
+		if (g_auth.activation_key_to_try.empty())
+		{
+			g_auth.activation_key_to_try = "dev" + std::string(28, '0');
+		}
+		g_auth.license_permissions = LICPERM_ULTIMATE;
+		g_tunables.version = 1;
+		g_tunables.ready.fulfil();
+		g_gui.initial_auth_done.fulfil();
+#else
 		if (g_auth.activation_key_to_try.empty())
 		{
 			g_gui.initial_auth_done.fulfil();
 		}
+#endif
 
 		g_script_mgr.addScript(g_hmodule, std::make_unique<Script>(&Gui::scriptFunc));
 		NativeTableHooksBuiltin::init();
@@ -2904,11 +2915,14 @@ namespace Stand
 				}
 				else if (g_renderer.doesGameplayStateAllowScriptExecution())
 				{
+#if !(defined(STAND_BYPASS_AUTH) || defined(STAND_DEV))
 					if (g_gui.about_to_update_root_state)
 					{
 						bad_state = 3;
 					}
-					else if (is_session_started() != (bool)NETWORK::NETWORK_IS_GAME_IN_PROGRESS()) // This native uses the same value. Is ours being tampered with?
+					else
+#endif
+					if (is_session_started() != (bool)NETWORK::NETWORK_IS_GAME_IN_PROGRESS())
 					{
 						bad_state = 4;
 					}
@@ -2972,6 +2986,7 @@ namespace Stand
 		}
 		if (!g_gui.isUnloadPending())
 		{
+#if !(defined(STAND_BYPASS_AUTH) || defined(STAND_DEV))
 			// Log out if perm has expired (or is invalid)
 			if (g_auth.license_permissions != LICPERM_FREE && g_auth.verifyPermSig() < g_auth.license_permissions)
 			{
@@ -3031,6 +3046,7 @@ namespace Stand
 					}
 				}
 			}
+#endif
 			if (g_gui.root_state != GUI_MINIMAL)
 			{
 				// Check clipboard
