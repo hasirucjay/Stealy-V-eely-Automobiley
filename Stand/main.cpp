@@ -1446,11 +1446,11 @@ namespace Stand
 		{
 			g_hooking.CEventGroupScriptNetwork_DispatchEvent_hook.setTarget(*p.add(24).rip().add(8).as<void**>());
 		});
-		BATCH_ADD("BX", "74 1D 4C 8D 05 ? ? ? ? 0F B7 C1", [](soup::Pointer p)
+		BATCH_ADD("BX", "74 ? 0F B7 C1 3D", [](soup::Pointer p)
 		{
 			pointers::blips = p.add(5).rip().as<CMiniMapBlip**>();
 		});
-		BATCH_ADD("BY", "78 13 8B D1 48 8B 0D ? ? ? ? E8", [](soup::Pointer p)
+		BATCH_ADD("BY", "48 8B 15 ? ? ? ? 49 8B F1", [](soup::Pointer p)
 		{
 			pointers::cam_pool = p.add(7).rip().as<rage::fwPool<camBaseCamera>**>();
 		});

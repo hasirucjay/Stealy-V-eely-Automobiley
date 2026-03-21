@@ -90,6 +90,9 @@ namespace Stand
 	{
 		switch (id)
 		{
+		case RN_NULL:
+			return stock_root_name;
+
 		case RN_NAME_ONLY:
 			return soup::ObfusString(STAND_NAME);
 

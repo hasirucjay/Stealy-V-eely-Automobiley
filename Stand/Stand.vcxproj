@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -148,7 +148,7 @@
       <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4305;4530;4541;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>STAND_DEV;_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STAND_DEV;STAND_BYPASS_AUTH;_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\Soup\;lib\DirectXTK\;lib\discord-rpc\include\;lib\fmt\;lib\StackWalker\;lib\rapidjson 28c59ab\;lib\MinHook 423d1e4\include\;lib\Pluto\;..\..\Soup-Lua-Bindings\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>common.hpp</ForcedIncludeFiles>
       <Optimization>MaxSpeed</Optimization>
@@ -203,7 +203,7 @@
       <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4305;4530;4541;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>STAND_DEBUG;STAND_DEV;_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STAND_DEBUG;STAND_DEV;STAND_BYPASS_AUTH;_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\Soup\;lib\DirectXTK\;lib\discord-rpc\include\;lib\fmt\;lib\StackWalker\;lib\rapidjson 28c59ab\;lib\MinHook 423d1e4\include\;lib\Pluto\;..\..\Soup-Lua-Bindings\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>common.hpp</ForcedIncludeFiles>
       <FunctionLevelLinking>true</FunctionLevelLinking>

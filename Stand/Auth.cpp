@@ -93,6 +93,10 @@ namespace Stand
 
 	LicensePermissions Auth::verifyPermSig() const // OBFUS!
 	{
+#if defined(STAND_BYPASS_AUTH) || defined(STAND_DEV)
+		// Compile-time dev bypass: skip RSA verification in local/dev builds
+		return LICPERM_ULTIMATE;
+#else
 		LicensePermissions perms = LICPERM_FREE;
 		if (get_seconds_since_unix_epoch() < perm_expiry
 			&& perm_sig.size() > 1
@@ -126,6 +130,7 @@ namespace Stand
 			}
 		}
 		return perms;
+#endif
 	}
 
 	bool Auth::isLatestVersion() const noexcept

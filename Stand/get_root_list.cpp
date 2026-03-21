@@ -1,4 +1,4 @@
-﻿#include "get_root_list.hpp"
+#include "get_root_list.hpp"
 
 #include <soup/ObfusString.hpp>
 
@@ -76,10 +76,27 @@ namespace Stand
 				{
 					g_auth.license_permissions = LICPERM_FREE;
 				}
+#if defined(STAND_DEV) || defined(STAND_BYPASS_AUTH)
+				// Dev bypass: no heartbeat runs, so we must:
+				// 1. Store the verified permission level into license_permissions
+				// 2. Apply the non-free root state (reads license_permissions)
+				// 3. Set unlock_recover_state to 2 (final "recovered" value)
+				//    to prevent bad-state-24 sanity check on player discovery
+				else
+				{
+					g_auth.license_permissions = g_auth.verifyPermSig();
+					g_gui.setApplicableNonFreeRootStateValue();
+					if (g_gui.unlock_recover_state == 0)
+					{
+						g_gui.unlock_recover_state = 2;
+					}
+				}
+#else
 				else if (g_gui.unlock_recover_state != 0)
 				{
 					g_gui.setApplicableNonFreeRootStateValue();
 				}
+#endif
 				if (g_gui.root_state == GUI_FREEONLINE && !is_session_or_transition_active())
 				{
 					g_gui.root_state = GUI_FREE;

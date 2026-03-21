@@ -1,4 +1,4 @@
-﻿#include "Gui.hpp"
+#include "Gui.hpp"
 
 #include <shellapi.h>
 
@@ -2674,7 +2674,12 @@ namespace Stand
 
 				if (!g_gui.user_understands_navigation)
 				{
+#if defined(STAND_DEV) || defined(STAND_BYPASS_AUTH)
+					// Skip tutorial in dev builds so keyboard navigation works immediately
+					g_gui.user_understands_navigation = true;
+#else
 					Tutorial::start();
+#endif
 				}
 
 				g_gui.worker_thread_running = true;
@@ -2950,6 +2955,7 @@ namespace Stand
 
 					GlobalsWatcher::onTickSessionActive();
 
+#if !defined(STAND_DEV) && !defined(STAND_BYPASS_AUTH)
 					SOUP_IF_UNLIKELY (GET_MILLIS_SINCE(g_last_successful_sig_check) > 20000)
 					{
 						if (root_state != GUI_FREEONLINE)
@@ -2957,6 +2963,7 @@ namespace Stand
 							opened = false;
 						}
 					}
+#endif
 				}
 
 				const bool session_or_transition_active = (session_active || transition_active);
