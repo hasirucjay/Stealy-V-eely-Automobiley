@@ -2515,6 +2515,7 @@
     <ClCompile Include="Worker.cpp" />
     <ClCompile Include="WorldState.cpp" />
     <ClCompile Include="yeet_flow.cpp" />
+    <ClCompile Include="std_find_not_ch_polyfill.cpp" />
     <ClCompile Include="AbstractEntity.cpp" />
     <ClCompile Include="AbstractModel.cpp" />
     <ClCompile Include="AbstractPlayer.cpp" />
