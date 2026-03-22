@@ -42,6 +42,7 @@
 #include "NetInterface.hpp"
 #include "PatternBatch.hpp"
 #include "PeHeader.hpp"
+#include "PackageMgr.hpp"
 #include "PointerCache.hpp"
 #include "pointers.hpp"
 #include "PubSubClient.hpp"
@@ -861,6 +862,7 @@ namespace Stand
 		g_tunables.version = 1;
 		g_tunables.ready.fulfil();
 		g_gui.initial_auth_done.fulfil();
+		PackageMgr::tunablesFail();
 #else
 		if (g_auth.activation_key_to_try.empty())
 		{

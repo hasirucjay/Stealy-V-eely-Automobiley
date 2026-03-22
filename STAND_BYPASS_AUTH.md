@@ -70,7 +70,7 @@ STARTUP (main.cpp)
 
 ## Bypass Chain Overview
 
-When `STAND_BYPASS_AUTH` or `STAND_DEV` is defined, the following 10-point chain must remain unbroken:
+When `STAND_BYPASS_AUTH` or `STAND_DEV` is defined, the following 11-point chain must remain unbroken:
 
 | # | Rule | File | What It Does |
 |---|------|------|-------------|
@@ -79,11 +79,12 @@ When `STAND_BYPASS_AUTH` or `STAND_DEV` is defined, the following 10-point chain
 | 3 | GUI Root State Promotion | `get_root_list.cpp` | Promotes `root_state` to `GUI_ULTIMATE` |
 | 4 | Unlock Recovery | `get_root_list.cpp` | Forces `unlock_recover_state = 2` |
 | 5 | Tunables Ready | `main.cpp` | `g_tunables.version = 1`, `ready.fulfil()` |
-| 6 | Root Name Fallback | `RootNameMgr.cpp` | `RN_NULL` returns `stock_root_name` |
-| 7 | Sig-Check Timeout | `Gui.cpp` | 20-second stale check compiled out |
-| 8 | Bad State 3 | `main.cpp` | `about_to_update_root_state` check compiled out |
-| 9 | Perm Expiry & Heartbeat | `main.cpp` | Expiry logout + heartbeat/tunables download compiled out |
-| 10 | Tutorial Gate | `Gui.cpp` | Forces `Tutorial::state >= TUT_UP` on menu open |
+| 6 | Package Manager Init | `main.cpp` | `PackageMgr::tunablesFail()` fulfils `updating_completed` |
+| 7 | Root Name Fallback | `RootNameMgr.cpp` | `RN_NULL` returns `stock_root_name` |
+| 8 | Sig-Check Timeout | `Gui.cpp` | 20-second stale check compiled out |
+| 9 | Bad State 3 | `main.cpp` | `about_to_update_root_state` check compiled out |
+| 10 | Perm Expiry & Heartbeat | `main.cpp` | Expiry logout + heartbeat/tunables download compiled out |
+| 11 | Tutorial Gate | `Gui.cpp` | Forces `Tutorial::state >= TUT_UP` on menu open |
 
 ---
 
@@ -148,6 +149,7 @@ g_auth.discoverActivationKey();
     g_tunables.version = 1;
     g_tunables.ready.fulfil();
     g_gui.initial_auth_done.fulfil();
+    PackageMgr::tunablesFail();   // Load local packages & fulfil updating_completed
 #else
     if (g_auth.activation_key_to_try.empty())
     {
@@ -156,13 +158,14 @@ g_auth.discoverActivationKey();
 #endif
 ```
 
-**Critical design note:** The key injection is inside the `if (empty())` guard (only when no file exists), but permissions, tunables, and auth-done are **outside** the guard — they must always run in bypass mode regardless of whether the activation key file is present.
+**Critical design note:** The key injection is inside the `if (empty())` guard (only when no file exists), but permissions, tunables, auth-done, and package manager init are **outside** the guard — they must always run in bypass mode regardless of whether the activation key file is present.
 
 **What this does:**
 - Injects a non-empty 31-char activation key (if needed)
 - Sets `license_permissions = LICPERM_ULTIMATE` (backend auth state)
 - Pretends tunables are loaded (`version = 1`, `ready.fulfil()`)
 - Unblocks the loading screen (`initial_auth_done.fulfil()`)
+- Initializes the package manager for Lua Scripts (`PackageMgr::tunablesFail()`)
 
 **What this does NOT do:**
 - It does **not** call `setApplicableNonFreeRootStateValue()` — the GUI root list isn't built yet at this point. Calling it here would crash (`ACCESS_VIOLATION at 0x0000000000000008`). The frontend promotion happens later in `get_root_list.cpp`.
@@ -372,6 +375,7 @@ For bypass mode to remain stable, **all** of these values must align:
 | `g_tunables.version` | `1` | `main.cpp` early init |
 | `g_tunables.ready` | fulfilled | `main.cpp` early init |
 | `g_gui.initial_auth_done` | fulfilled | `main.cpp` early init |
+| `PackageMgr::updating_completed` | fulfilled | `main.cpp` early init via `tunablesFail()` |
 | `RootNameMgr::idToString(RN_NULL)` | `stock_root_name` | `RootNameMgr.cpp` |
 | Sig-check timeout | compiled out | `Gui.cpp` |
 | Bad state 3 check | compiled out | `main.cpp` |
@@ -392,6 +396,7 @@ The auth system is a chain of dependent state transitions. Missing any single po
 | No GUI promotion | Backend says Ultimate, UI shows Free → bad state 5/7/8 |
 | `unlock_recover_state` stays 0 | Bad state 24 when other players join |
 | Tunables not ready | Loading screen never completes |
+| `PackageMgr` not initialized | Lua Scripts shows "Please wait..." forever |
 | `RN_NULL` not handled | `SOUP_ASSERT_UNREACHABLE` → crash |
 | Sig timeout active | Menu force-closes after 20 seconds |
 | Bad state 3 active | False corruption detection → unload |
@@ -437,7 +442,7 @@ The GUI state promotion (`setApplicableNonFreeRootStateValue()`) must happen in 
 
 | File | Bypass Responsibility |
 |---|---|
-| `main.cpp` | Key injection, `LICPERM_ULTIMATE`, tunables, `initial_auth_done`, bad state 3, perm expiry, heartbeat compiled out |
+| `main.cpp` | Key injection, `LICPERM_ULTIMATE`, tunables, `initial_auth_done`, `PackageMgr::tunablesFail()`, bad state 3, perm expiry, heartbeat compiled out |
 | `Auth.cpp` | `verifyPermSig()` → returns `LICPERM_ULTIMATE` |
 | `get_root_list.cpp` | `setApplicableNonFreeRootStateValue()`, `unlock_recover_state = 2` |
 | `RootNameMgr.cpp` | `RN_NULL` → `stock_root_name` fallback |
