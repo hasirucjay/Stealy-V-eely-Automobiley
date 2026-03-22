@@ -2,7 +2,7 @@
 
 > **Purpose:** This document describes every change required to fully bypass Stand's production authentication system for local development. The bypass is **not** a single toggle — it is a complete runtime chain replacement for all auth-dependent state transitions.
 
-![Bypass Chain Overview](https://ibb.co/kN2LfNd)
+![Bypass Chain Overview](images/Grand%20Theft%20Auto%20V%20Screenshot%202026.03.21%20-%2022.52.22.10.png)
 
 ---
 
