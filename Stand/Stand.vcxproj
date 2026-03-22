@@ -2855,6 +2855,9 @@
     <MASM Include="script_vm_helper.asm" />
     <MASM Include="swapchain_hook.asm" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\STAND_BYPASS_AUTH.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />

@@ -3083,4 +3083,7 @@
     <MASM Include="rage_input_helper.asm" />
     <MASM Include="aes_helper.asm" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\STAND_BYPASS_AUTH.md" />
+  </ItemGroup>
 </Project>
