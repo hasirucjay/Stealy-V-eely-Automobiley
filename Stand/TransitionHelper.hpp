@@ -13,6 +13,7 @@ namespace Stand
 	{
 		inline static bool fix_stucks = true;
 		inline static time_t ts_started = 0;
+		inline static bool stand_initiated_transition = false;
 
 		[[nodiscard]] static time_t getTimeWastedOnTransitionState();
 		[[nodiscard]] static time_t getTimeWhenTransitionEnded();

@@ -2319,6 +2319,11 @@
     <ClInclude Include="be_packet.hpp" />
     <ClInclude Include="BattlEyeServer.hpp" />
     <ClInclude Include="CommandUncapFps.hpp" />
+    <ClInclude Include="CommandDisableWantedLevelMusic.hpp" />
+    <ClInclude Include="CommandPlayerBoxEsp.hpp" />
+    <ClInclude Include="CommandPlayerRp.hpp" />
+    <ClInclude Include="CommandSearchLiterals.hpp" />
+    <ClInclude Include="CommandWheelColour.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
@@ -2931,7 +2936,6 @@
     <ClCompile Include="script_id.cpp" />
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="CommandListActionCategory.cpp" />
-    <ClCompile Include="CommandPlayerBoxEsp.hpp" />
     <ClCompile Include="CommandDisableInVehicleHairScale.cpp" />
     <ClCompile Include="CommandListAnimations.cpp" />
     <ClCompile Include="OrgHelper.cpp" />
@@ -3065,7 +3069,6 @@
     <ClCompile Include="ScUtil.cpp" />
     <ClCompile Include="lang_vi.cpp" />
     <ClCompile Include="font_bevietnamprolight_1.cpp" />
-    <ClCompile Include="CommandDisableWantedLevelMusic.hpp" />
     <ClCompile Include="SpinlockBase.cpp" />
     <ClCompile Include="CommandDriveOnWater.cpp" />
     <ClCompile Include="CommandListAnalogue.cpp" />
@@ -3085,5 +3088,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\STAND_BYPASS_AUTH.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{D1A5F2F8-3E4B-4C6A-9B2F-0A1E2B3C4D5E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="**\*.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="**\*.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

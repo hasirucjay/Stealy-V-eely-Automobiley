@@ -53,12 +53,32 @@ namespace Stand
 
 	static TransitionState prev_ts = TRANSITION_STATE_EMPTY;
 
+	static int prev_new_session = 0;
+
 	void TransitionHelper::onTick()
 	{
 		if (*pointers::CLoadingScreens_ms_Context != 0)
 		{
 			return;
 		}
+
+		// Intercept game-initiated session transitions from the pause menu.
+		// When the game's scripts (fmmc_launcher/pause_menu_pages) set GLOBAL_NEW_SESSION = 1,
+		// and Stand didn't initiate it, redirect FIND_PUBLIC to NEW_PUBLIC so that
+		// "Go" creates a new public session instead of trying matchmaking (which requires BattlEye).
+		{
+			int new_session = *ScriptGlobal(GLOBAL_NEW_SESSION).as<int*>();
+			if (new_session == 1 && prev_new_session == 0 && !stand_initiated_transition)
+			{
+				int* session_type_ptr = ScriptGlobal(GLOBAL_NEW_SESSION_TYPE).as<int*>();
+				if (*session_type_ptr == FIND_PUBLIC)
+				{
+					*session_type_ptr = NEW_PUBLIC;
+				}
+			}
+			prev_new_session = new_session;
+		}
+
 		auto* const tsptr = ScriptGlobal(GLOBAL_TRANSITION_STATE).as<TransitionState*>();
 		const auto ts = *tsptr;
 		if (ts != prev_ts)
@@ -177,6 +197,8 @@ namespace Stand
 
 	bool TransitionHelper::doTransition(SessionType session_type, bool end_when_almost_done)
 	{
+		stand_initiated_transition = true;
+
 #if FAKE_CAM
 		{
 			auto pos = g_cam_ped.getPos();
@@ -294,6 +316,7 @@ namespace Stand
 #if FAKE_CAM
 		release_cam(hijacked_cam);
 #endif
+		stand_initiated_transition = false;
 		return went_to_sp;
 	}
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -80,8 +80,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <OutDir>bin\Dev\</OutDir>
-    <IntDir>bin\int\Debug\</IntDir>
+    <OutDir>bin\Debug\</OutDir>
+    <IntDir>bin\Debug Build\</IntDir>
     <TargetName>Stand</TargetName>
     <TargetExt>.dll</TargetExt>
     <EnableClangTidyCodeAnalysis>false</EnableClangTidyCodeAnalysis>
@@ -2083,6 +2083,11 @@
     <ClInclude Include="XoredNativeHash.hpp" />
     <ClInclude Include="xormagics.hpp" />
     <ClInclude Include="yeet_flow.hpp" />
+    <ClInclude Include="CommandDisableWantedLevelMusic.hpp" />
+    <ClInclude Include="CommandPlayerBoxEsp.hpp" />
+    <ClInclude Include="CommandPlayerRp.hpp" />
+    <ClInclude Include="CommandSearchLiterals.hpp" />
+    <ClInclude Include="CommandWheelColour.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractEntity.cpp" />
@@ -2117,7 +2122,6 @@
     <ClCompile Include="CommandAutoDriveAction.cpp" />
     <ClCompile Include="CommandDisableInVehicleHairScale.cpp" />
     <ClCompile Include="CommandDisablePhone.cpp" />
-    <ClCompile Include="CommandDisableWantedLevelMusic.hpp" />
     <ClCompile Include="CommandDlcpacks.cpp" />
     <ClCompile Include="CommandDriveOnWater.cpp" />
     <ClCompile Include="CommandForceRelay.cpp" />
@@ -2146,7 +2150,6 @@
     <ClCompile Include="CommandMoveFreedom.cpp" />
     <ClCompile Include="CommandNoBeast.cpp" />
     <ClCompile Include="CommandNoLscBarriers.cpp" />
-    <ClCompile Include="CommandPlayerBoxEsp.hpp" />
     <ClCompile Include="CommandPlayerKickPoolsClosed.cpp" />
     <ClCompile Include="CommandQuickCtx.cpp" />
     <ClCompile Include="CommandRestartfm.cpp" />

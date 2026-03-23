@@ -739,6 +739,56 @@ namespace Stand
 		});
 	}
 
+	static constexpr size_t MAX_ARXAN_TRAPS = 256;
+	static uintptr_t s_arxan_trap_addrs[MAX_ARXAN_TRAPS]{};
+	static volatile long s_arxan_trap_count = 0;
+	static LONG CALLBACK arxanTrapVehHandler(PEXCEPTION_POINTERS exp)
+	{
+		const DWORD code = exp->ExceptionRecord->ExceptionCode;
+		const uintptr_t rip = exp->ContextRecord->Rip;
+		if (!g_gta_module.range.contains(rip))
+		{
+			return EXCEPTION_CONTINUE_SEARCH;
+		}
+		if (code == EXCEPTION_PRIV_INSTRUCTION || code == EXCEPTION_ILLEGAL_INSTRUCTION)
+		{
+			DWORD oldProtect;
+			if (VirtualProtect(reinterpret_cast<void*>(rip), 1, PAGE_EXECUTE_READWRITE, &oldProtect))
+			{
+				*reinterpret_cast<uint8_t*>(rip) = 0x90;
+				VirtualProtect(reinterpret_cast<void*>(rip), 1, oldProtect, &oldProtect);
+			}
+			long idx = InterlockedIncrement(&s_arxan_trap_count) - 1;
+			if (idx < MAX_ARXAN_TRAPS)
+			{
+				s_arxan_trap_addrs[idx] = rip;
+			}
+			return EXCEPTION_CONTINUE_EXECUTION;
+		}
+		if (code == EXCEPTION_ACCESS_VIOLATION || code == EXCEPTION_ILLEGAL_INSTRUCTION)
+		{
+			long count = s_arxan_trap_count;
+			if (count > MAX_ARXAN_TRAPS) count = MAX_ARXAN_TRAPS;
+			for (long i = 0; i < count; ++i)
+			{
+				if (rip > s_arxan_trap_addrs[i] && rip <= s_arxan_trap_addrs[i] + 32)
+				{
+					DWORD oldProtect;
+					if (VirtualProtect(reinterpret_cast<void*>(rip), 1, PAGE_EXECUTE_READWRITE, &oldProtect))
+					{
+						*reinterpret_cast<uint8_t*>(rip) = 0x90;
+						VirtualProtect(reinterpret_cast<void*>(rip), 1, oldProtect, &oldProtect);
+					}
+					return EXCEPTION_CONTINUE_EXECUTION;
+				}
+			}
+		}
+
+		return EXCEPTION_CONTINUE_SEARCH;
+	}
+
+	static PVOID s_arxan_veh_handle = nullptr;
+
 #define LOG_NATIVE_REG_ORDER false
 
 #if LOG_NATIVE_REG_ORDER
@@ -966,6 +1016,9 @@ namespace Stand
 #endif
 
 #if true
+		// Register VEH handler FIRST in chain to catch Arxan traps before Arxan's own handler.
+		s_arxan_veh_handle = AddVectoredExceptionHandler(1, arxanTrapVehHandler);
+
 		// This somewhat disables arxan related stuff so some functions can be hooked without crashing.
 		{
 			SIG_INST("48 8D 45 ? 48 89 45 ? 48 8D 05 ? ? ? ? 48 89 45");
