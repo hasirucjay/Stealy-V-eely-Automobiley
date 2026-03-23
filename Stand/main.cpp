@@ -1017,7 +1017,14 @@ namespace Stand
 
 #if true
 		// Register VEH handler FIRST in chain to catch Arxan traps before Arxan's own handler.
-		s_arxan_veh_handle = AddVectoredExceptionHandler(1, arxanTrapVehHandler);
+		// When coloading, skip the VEH handler: it catches ACCESS_VIOLATION within the GTA module
+		// and NOPs faulting instructions near recorded trap sites. Cherax's hooks trigger faults
+		// that they handle internally, but our handler intercepts them first and NOPs out Cherax's
+		// hook code, corrupting the P7 hook chain and producing garbled model data.
+		if (!ColoadMgr::coloading_with_any_menu)
+		{
+			s_arxan_veh_handle = AddVectoredExceptionHandler(1, arxanTrapVehHandler);
+		}
 
 		// This somewhat disables arxan related stuff so some functions can be hooked without crashing.
 		{
@@ -2159,7 +2166,7 @@ namespace Stand
 		BATCH_ADD_OPTIONAL_HOOK("PJ", received_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 4C 8B EA");
 		BATCH_ADD_OPTIONAL_HOOK("PK", clone_pack, "48 89 5c 24", "48 89 6c 24 ? 48 89 74 24 ? 57 48 83 ec ? 48 8b f9 48 8b ca 49 8b e9");
 		//BATCH_ADD_OPTIONAL_HOOK("PL", send_clone_create, "4C 8B DC 49 89", "5B 08 49 89 6B 18 49 89 73 20 57 41 54 41 55 41 56 41 57 48 83 EC 50 48 8B 02 4D 8B F8");
-		//BATCH_ADD_OPTIONAL_HOOK("PM", send_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 0F B6 72");
+		BATCH_ADD_OPTIONAL_HOOK("PM", send_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 0F B6 B2");
 		//BATCH_ADD_OPTIONAL_HOOK("PN", send_clone_remove, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 30 41 80 78 ? FF 41 8A E9 49 8B F8 48 8B DA 48 8B F1 74");
 		BATCH_ADD_OPTIONAL_HOOK("PO", rage_netSyncTree_Read, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 20 44 89 40 18 57 48 83 EC 30 44 8B 05");
 		BATCH_ADD("PP", "49 8B CE FF 90 A0 00 00 00 84 C0 74 31 33 FF", [](soup::Pointer p)

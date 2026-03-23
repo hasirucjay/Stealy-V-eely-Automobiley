@@ -71,7 +71,17 @@ namespace Stand
 		{
 			return true;
 		}
-		return AbstractPlayer::host_queue_sort_algos[(*pointers::network_session)->host_queue_sort_algo](a, b);
+		__try
+		{
+			if (auto session = *pointers::network_session)
+			{
+				return AbstractPlayer::host_queue_sort_algos[session->host_queue_sort_algo](a, b);
+			}
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+		}
+		return false;
 	}
 
 	bool PlayerListSort::host_queue(const CommandPlayer* const a, const CommandPlayer* const b)

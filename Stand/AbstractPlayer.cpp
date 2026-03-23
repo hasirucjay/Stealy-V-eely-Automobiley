@@ -404,17 +404,28 @@ namespace Stand
 		const auto list = AbstractPlayer::listAll();
 		if (list.size() >= 2)
 		{
-			const auto comp = host_queue_sort_algos[(*pointers::network_session)->host_queue_sort_algo];
-			for (const auto& p : list)
+			__try
 			{
-				if (!p.canBecomeHost())
+				auto session = *pointers::network_session;
+				if (!session)
 				{
-					continue;
+					return best_candidate;
 				}
-				if (!best_candidate.isValid() || comp(p, best_candidate))
+				const auto comp = host_queue_sort_algos[session->host_queue_sort_algo];
+				for (const auto& p : list)
 				{
-					best_candidate = p;
+					if (!p.canBecomeHost())
+					{
+						continue;
+					}
+					if (!best_candidate.isValid() || comp(p, best_candidate))
+					{
+						best_candidate = p;
+					}
 				}
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER)
+			{
 			}
 		}
 		return best_candidate;

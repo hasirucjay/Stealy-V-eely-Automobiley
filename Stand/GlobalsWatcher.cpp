@@ -4,6 +4,7 @@
 
 #include "AbstractEntity.hpp"
 #include "CNetGamePlayer.hpp"
+#include "ColoadMgr.hpp"
 #include "FlowEvent.hpp"
 #include "FlowEventReaction.hpp"
 #include "natives.hpp"
@@ -217,6 +218,10 @@ namespace Stand
 		}
 
 		// Detect indirect money drops & kicks.
+		// When coloading, the other menu may shift script global offsets, causing
+		// GPBD_FM_4 reads to return garbage data and trigger false positives.
+		if (!ColoadMgr::coloading_with_any_menu)
+		{
 		for (const auto& p : players)
 		{
 			for (int i = 0; i != 10; ++i)
@@ -231,6 +236,7 @@ namespace Stand
 					);
 				}
 			}
+		}
 		}
 #if false // Could also block them here, but defering that to CREATE_NON_NETWORKED_AMBIENT_PICKUP hook
 		for (int i = 0; i != 10; ++i)
