@@ -3,6 +3,7 @@
 #include "CommandPlayerCrash.hpp"
 
 #include "ComponentCrash.hpp"
+#include "Hooking.hpp"
 #include "Script.hpp"
 #include "Util.hpp"
 
@@ -12,7 +13,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandPlayerCrashTrain(CommandList* const parent)
-			: CommandPlayerCrash(parent, LOC("PLYCRSH_T"), CMDNAMES_OBF("steamroll"), HAVE_SEND_CLONE_CREATE_HOOK ? LOC("PLYCRSH_H_AOE2") : NOLABEL)
+			: CommandPlayerCrash(parent, LOC("PLYCRSH_T"), CMDNAMES_OBF("steamroll"), (HAVE_SEND_CLONE_CREATE_HOOK || HAVE_SEND_CLONE_SYNC_HOOK) ? LOC("PLYCRSH_H_AOE2") : NOLABEL)
 		{
 		}
 
@@ -25,6 +26,18 @@ namespace Stand
 			{
 				return;
 			}
+
+#if HAVE_SEND_CLONE_SYNC_HOOK && !HAVE_SEND_CLONE_CREATE_HOOK
+			// Sends the sync to everyone else through the PM hook for AoE
+			for (const auto& ap : AbstractPlayer::listExcept(true))
+			{
+				auto r = ap.getCNetGamePlayer();
+				if (r != nullptr)
+				{
+					g_hooking.outgoing_player_sync_exclusive.add(std::move(r));
+				}
+			}
+#endif
 
 			STREAMING::REQUEST_MODEL(ATSTRINGHASH("freightcar"));
 			while (!STREAMING::HAS_MODEL_LOADED(ATSTRINGHASH("freightcar")))
@@ -51,6 +64,12 @@ namespace Stand
 			g_comp_crash.car3.reset();
 
 			g_hooking.outgoing_train_create_exclusive.reset();
+
+#if HAVE_SEND_CLONE_SYNC_HOOK && !HAVE_SEND_CLONE_CREATE_HOOK
+			// Let the PM hook handle blasting it to all allowed players
+			Script::current()->yield(500);
+			g_hooking.outgoing_player_sync_exclusive.reset();
+#endif
 		}
 
 	protected:

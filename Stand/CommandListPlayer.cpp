@@ -583,7 +583,7 @@ namespace Stand
 				crash->createChild<CommandPlayerCrashFootlettuce>();
 #endif
 				crash->createChild<CommandPlayerCrashVehicle>();
-#if HAVE_SEND_CLONE_CREATE_HOOK
+#if HAVE_SEND_CLONE_SYNC_HOOK && !HAVE_SEND_CLONE_CREATE_HOOK
 				crash->createChild<CommandPlayerCrashTrain>();
 #endif
 			}
