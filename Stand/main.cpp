@@ -652,7 +652,7 @@ namespace Stand
 		DWORD OldProtect;
 		for (size_t i = 0; i < g_stand_dll_range.size; i += 0x1000)
 		{
-			VirtualProtect(g_hmodule + i, 0x1000, PAGE_EXECUTE_READWRITE, &OldProtect);
+			VirtualProtect(g_hmodule, 0x1000, PAGE_EXECUTE_READWRITE, &OldProtect);
 		}
 
 		uint8_t thread_asm[] = {
@@ -1277,7 +1277,7 @@ namespace Stand
 
 		// Get window title
 		const auto window_title_len = GetWindowTextLength(pointers::hwnd);
-		std::string window_title(window_title_len, '\0');
+		std::string window_title(window_title_len, L'\0');
 		GetWindowTextA(pointers::hwnd, &window_title[0], window_title_len + 1);
 
 		// Init PointerCache
