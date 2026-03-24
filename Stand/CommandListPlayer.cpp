@@ -584,13 +584,13 @@ namespace Stand
 #endif
 				crash->createChild<CommandPlayerCrashVehicle>();
 #if HAVE_SEND_CLONE_SYNC_HOOK && !HAVE_SEND_CLONE_CREATE_HOOK
-				crash->createChild<CommandPlayerCrashTrain>();
+			//	crash->createChild<CommandPlayerCrashTrain>();
 #endif
 			}
 #if !HAVE_SEND_CLONE_CREATE_HOOK
 			else
 			{
-				crash->createChild<CommandPlayerCrashTrain>();
+			//	crash->createChild<CommandPlayerCrashTrain>();
 			}
 #endif
 		}
