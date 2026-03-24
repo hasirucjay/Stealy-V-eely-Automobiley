@@ -19,6 +19,10 @@ namespace Stand
 
 		void expandDong(std::vector<AbstractPlayer>&& targets) const final
 		{
+			if (targets.empty())
+			{
+				return;
+			}
 			auto p = targets.at(0);
 			if (p.isRockstarAdmin()
 				|| !setWhitelistTargeting(g_hooking.outgoing_train_create_exclusive, targets)
@@ -46,6 +50,10 @@ namespace Stand
 			}
 			if (g_comp_crash.car1.isValid())
 			{
+			g_hooking.outgoing_train_create_exclusive.reset();
+#if HAVE_SEND_CLONE_SYNC_HOOK && !HAVE_SEND_CLONE_CREATE_HOOK
+			g_hooking.outgoing_player_sync_exclusive.reset();
+#endif
 				return;
 			}
 			g_comp_crash.car1 = createCar(p);
