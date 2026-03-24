@@ -583,16 +583,10 @@ namespace Stand
 				crash->createChild<CommandPlayerCrashFootlettuce>();
 #endif
 				crash->createChild<CommandPlayerCrashVehicle>();
-#if HAVE_SEND_CLONE_SYNC_HOOK && !HAVE_SEND_CLONE_CREATE_HOOK
-			//	crash->createChild<CommandPlayerCrashTrain>();
+#if HAVE_SEND_CLONE_SYNC_HOOK
+				crash->createChild<CommandPlayerCrashTrain>();
 #endif
 			}
-#if !HAVE_SEND_CLONE_CREATE_HOOK
-			else
-			{
-			//	crash->createChild<CommandPlayerCrashTrain>();
-			}
-#endif
 		}
 
 		// Network Traffic
