@@ -34,7 +34,7 @@ namespace Stand
 						if (anchorPos.distance(offsetPos) > 60.0f)
 						{
 							offsetPos += (ENTITY::GET_ENTITY_FORWARD_VECTOR(g_player_ent) * 50.0f);
-							PATHFIND::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(offsetPos.x, offsetPos.y, offsetPos.z, &anchorPos, &anchorHeading, 1, 1.0f, 0);
+							PATH::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(offsetPos.x, offsetPos.y, offsetPos.z, &anchorPos, &anchorHeading, 1, 1.0f, 0);
 							anchorPos.z += 5.0f;
 							anchorHeading += 90.0f;
 						}

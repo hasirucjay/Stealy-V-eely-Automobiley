@@ -1,4 +1,4 @@
-﻿#include "AbstractEntity.hpp"
+#include "AbstractEntity.hpp"
 
 #include <fmt/core.h>
 
@@ -250,7 +250,7 @@ namespace Stand
 			const rage::Vector2 screen_pos = pos.getScreenPos();
 			return abs(0.5f - screen_pos.x) + abs(0.5f - screen_pos.y);
 		});
-		const Vector3 cam_pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
+		const Vector3 cam_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 		for (AbstractEntity& ent : entites)
 		{
 			const v3 pos = ent.getPos();
@@ -823,7 +823,7 @@ namespace Stand
 
 	bool AbstractEntity::isInLineOfSight()
 	{
-		return isInLineOfSight(CAM::GET_FINAL_RENDERED_CAM_COORD());
+		return isInLineOfSight(CAMERA::GET_FINAL_RENDERED_CAM_COORD());
 	}
 
 	bool AbstractEntity::isInLineOfSight(const v3& observer_pos)
@@ -2452,7 +2452,7 @@ namespace Stand
 			const v3 pos = g_player_ped.getPos();
 			PED::SET_PED_INTO_VEHICLE(g_player_ped, veh, -1);
 			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(veh, pos.x, pos.y, pos.z, false, false, false);
-			ENTITY::SET_ENTITY_ROTATION(veh, 0, 0, CAM::GET_GAMEPLAY_CAM_ROT(0).z, 0, true);
+			ENTITY::SET_ENTITY_ROTATION(veh, 0, 0, CAMERA::GET_GAMEPLAY_CAM_ROT(0).z, 0, true);
 		}, [](auto)
 		{
 			Util::toast(LOC("VEHCTRL"));
@@ -2971,7 +2971,7 @@ namespace Stand
 	bool AbstractEntity::isOnRoad()
 	{
 		const auto coords = getPos();
-		return PATHFIND::IS_POINT_ON_ROAD(coords.x, coords.y, coords.z, *this);
+		return PATH::IS_POINT_ON_ROAD(coords.x, coords.y, coords.z, *this);
 	}
 
 	AbstractPlayer AbstractEntity::getPersonalVehicleOwner()

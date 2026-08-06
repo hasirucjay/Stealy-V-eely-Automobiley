@@ -70,7 +70,7 @@ namespace Stand
 			Vector3 rot;
 			if (click.issuedByAndForUser())
 			{
-				rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+				rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 				if ((VEHICLE::IS_THIS_MODEL_A_PLANE(hash) || VEHICLE::IS_THIS_MODEL_A_HELI(hash))
 					&& ((player_ped_is_in_vehicle ? inveh_airinair : onfoot_airinair)->m_on)
 					)

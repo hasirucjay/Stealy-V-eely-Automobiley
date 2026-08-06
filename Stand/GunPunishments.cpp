@@ -35,8 +35,8 @@ namespace Stand
 				}
 				else
 				{
-					auto cam_pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
-					auto target_pos = cam_pos + (CAM::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * 1000.0f);
+					auto cam_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
+					auto target_pos = cam_pos + (CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * 1000.0f);
 					const int shapetest_handle = SHAPETEST::START_EXPENSIVE_SYNCHRONOUS_SHAPE_TEST_LOS_PROBE(cam_pos.x, cam_pos.y, cam_pos.z, target_pos.x, target_pos.y, target_pos.z, -1, g_player_ped, 0);
 					BOOL hit;
 					Vector3 surfaceNormal;

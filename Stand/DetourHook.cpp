@@ -40,6 +40,18 @@ namespace Stand
 
 	void DetourHook::createHook()
 	{
+		if (ColoadMgr::shouldYieldHook(name))
+		{
+			// Calling the game entry still follows the owner menu's detour, but we must not
+			// install a second trampoline inside that menu's hook implementation.
+			original = target;
+			yielded_to_existing_hook = true;
+#ifdef STAND_DEV
+			g_logger.log(fmt::format("Yielding hook {} to the co-loaded menu.", name.toString()));
+#endif
+			return;
+		}
+
 		if (!isValid() && !isMandatory())
 		{
 #ifdef STAND_DEBUG
@@ -185,6 +197,10 @@ namespace Stand
 
 	void DetourHook::enableHook()
 	{
+		if (yielded_to_existing_hook)
+		{
+			return;
+		}
 		if (isHooked())
 		{
 			if (isLongjump())
@@ -208,6 +224,10 @@ namespace Stand
 
 	void DetourHook::enableHookQueued()
 	{
+		if (yielded_to_existing_hook)
+		{
+			return;
+		}
 		if (isHooked())
 		{
 			if (isLongjump())

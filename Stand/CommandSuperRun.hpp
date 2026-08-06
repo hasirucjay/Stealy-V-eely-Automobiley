@@ -37,7 +37,7 @@ namespace Stand
 					}
 					if (Input::isAnyKeyPressed(hotkeys, INPUT_SPRINT))
 					{
-						const Vector3 vec = CAM::GET_FINAL_RENDERED_CAM_ROT(2).toDirNoZ() * (float(value) / 100.0f);
+						const Vector3 vec = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).toDirNoZ() * (float(value) / 100.0f);
 						ENTITY::APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(g_player_ped, 1, vec.x, vec.y, 0.0f, true, false, true, true);
 					}
 					return true;

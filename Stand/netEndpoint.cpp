@@ -46,6 +46,9 @@ namespace rage
 		msg.targets[0] = target;
 		msg.remove_reason = remove_reason;
 		msg.num_targets = 1;
-		(*pointers::connection_mgr)->SendOutOfBand(GetAddress(), channelId, msg, 0);
+		if (auto con_mgr = pointers::connection_mgr ? *pointers::connection_mgr : nullptr)
+		{
+			con_mgr->SendOutOfBand(GetAddress(), channelId, msg, 0);
+		}
 	}
 }

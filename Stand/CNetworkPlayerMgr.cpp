@@ -17,11 +17,26 @@ compactplayer_t CNetworkPlayerMgr::getHostIndex() const
 	compactplayer_t p = 0;
 	for (; p != MAX_PLAYERS; ++p)
 	{
-		if (Players[p] != nullptr
-			&& Players[p]->isHost()
-			)
+		auto* const player = Players[p];
+		if (player == nullptr)
 		{
-			break;
+			continue;
+		}
+
+		__try
+		{
+			if (player->player_id != p)
+			{
+				continue;
+			}
+
+			if (player->isHost())
+			{
+				break;
+			}
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
 		}
 	}
 	return p;

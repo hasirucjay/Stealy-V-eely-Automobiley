@@ -16,6 +16,35 @@
 
 namespace Stand
 {
+	bool SessionSpoofing::hasCopyFrom() noexcept
+	{
+		return copy_from_rid != 0;
+	}
+
+	int64_t SessionSpoofing::getCopyFromRid() noexcept
+	{
+		return copy_from_rid;
+	}
+
+	RemoteGamer* SessionSpoofing::getCopyFrom(bool refresh) noexcept
+	{
+		if (!hasCopyFrom())
+		{
+			return nullptr;
+		}
+		return RemoteGamer::get(copy_from_rid, true, refresh ? RGU_DETAILED : RGU_NONE);
+	}
+
+	void SessionSpoofing::setCopyFrom(RemoteGamer* g) noexcept
+	{
+		copy_from_rid = (g != nullptr ? g->rid : 0);
+	}
+
+	void SessionSpoofing::clearCopyFrom() noexcept
+	{
+		copy_from_rid = 0;
+	}
+
 	rage::rlSessionInfo& SessionSpoofing::getRealSessionInfo()
 	{
 		return (*pointers::network_session)->session->rline_session.data.info;
@@ -53,7 +82,7 @@ namespace Stand
 
 	bool SessionSpoofing::isActive() noexcept
 	{
-		return copy_from != nullptr
+		return hasCopyFrom()
 			|| CommandHideSession::instance->value != 0
 			|| CommandSpoofHost::instance->m_on
 			|| CommandSpoofSessionType::instance->value != -1
@@ -108,8 +137,11 @@ namespace Stand
 
 	void SessionSpoofing::onTickActive()
 	{
+		auto* const copy_from = getCopyFrom(true);
 		rage::rlSessionInfo spoofed_session_info{};
-		if (copy_from != nullptr)
+		if (copy_from != nullptr
+			&& copy_from->hasSession()
+			)
 		{
 			spoofed_session_info.fromGsInfo(copy_from->getGsInfo());
 		}

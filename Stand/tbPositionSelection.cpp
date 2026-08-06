@@ -20,8 +20,8 @@ namespace Stand
 
 	void tbPositionSelection::onTick()
 	{
-		auto cam_pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
-		auto cam_rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+		auto cam_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
+		auto cam_rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 		auto cam_vec = cam_rot.toDir() * 50.0f;
 		auto cam_target = cam_pos;
 		v3 closest_chunk{};
@@ -29,7 +29,7 @@ namespace Stand
 		for (uint8_t i = 0; i < (8500 / 50); ++i)
 		{
 			cam_target += cam_vec;
-			auto chunk_z = PATHFIND::GET_APPROX_HEIGHT_FOR_POINT(cam_target.x, cam_target.y);
+			auto chunk_z = PATH::GET_APPROX_HEIGHT_FOR_POINT(cam_target.x, cam_target.y);
 			v3 chunk{ cam_target.x, cam_target.y, chunk_z };
 			auto chunk_dist = chunk.distance(cam_target);
 			if (chunk_dist < closest_chunk_dist)

@@ -81,7 +81,7 @@ namespace Stand
 
 		void onTickInGameViewport() final
 		{
-			if (SessionSpoofing::copy_from != nullptr)
+			if (SessionSpoofing::hasCopyFrom())
 			{
 				setHelpText(LOC("HDESESS_H_CPY"));
 			}

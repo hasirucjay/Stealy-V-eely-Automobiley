@@ -25,6 +25,7 @@ namespace Stand
 		void* target = nullptr;
 		void* original = nullptr;
 		void* effective_target = nullptr;
+		bool yielded_to_existing_hook = false;
 
 		[[deprecated("A hook was provided in Hooking.hpp, but not registered in Hooking.cpp. This may be intentional for testing, but should be resolved before dev/release.")]]
 		DetourHook()

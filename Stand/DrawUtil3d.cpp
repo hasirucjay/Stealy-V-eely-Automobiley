@@ -85,7 +85,7 @@ namespace Stand
 			{
 				draw_ar_marker(pos, colour);
 			}
-			const auto dist_to_cam = CAM::GET_FINAL_RENDERED_CAM_COORD().distanceTopdown(pos);
+			const auto dist_to_cam = CAMERA::GET_FINAL_RENDERED_CAM_COORD().distanceTopdown(pos);
 			float num_lines = 360.0f / (dist_to_cam / 8.0f); // At distance of 8 metres, we need about 360 lines.
 			if (num_lines < 36.0f)
 			{

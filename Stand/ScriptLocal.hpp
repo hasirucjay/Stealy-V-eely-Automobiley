@@ -8,7 +8,7 @@
 
 // fm_content_business_battles
 
-#define LOCAL_BB2_SHDATA			5426
+#define LOCAL_BB2_SHDATA			5462
 #define LOCAL_BB2_STATE				LOCAL_BB2_SHDATA + 1152
 
 // casinoroulette
@@ -24,34 +24,34 @@
 
 #pragma region ScrUpdate
 // maintransition
-#define LOCAL_MT_LFF 158
+#define LOCAL_MT_LFF 181
 #define LOCAL_MT_LFF_CHECKIDX 352
 // am_pi_menu
-#define LOCAL_PI_STATE 1779
+#define LOCAL_PI_STATE 1786
 #define LOCAL_PI_BITSET 1945
 // am_launcher
-#define LOCAL_LNCH_PLAYERSTATE 245
+#define LOCAL_LNCH_PLAYERSTATE 268
 // am_penned_in
-#define LOCAL_PNDIN_SHDATA 104
+#define LOCAL_PNDIN_SHDATA 127
 // am_cp_collection
-#define LOCAL_CPCOL_SHDATA 826
+#define LOCAL_CPCOL_SHDATA 849
 // am_hunt_the_beast
-#define LOCAL_HTB_SHDATA 626
+#define LOCAL_HTB_SHDATA 633
 #define LOCAL_HTB_BEAST LOCAL_HTB_SHDATA + 1 + 6
 // am_challenges
-#define LOCAL_CHLNG_SHDATA 648
+#define LOCAL_CHLNG_SHDATA 671
 #define LOCAL_SHDATA_WARMUP 43
-#define LOCAL_CHLNG_PLYDATA 2615
+#define LOCAL_CHLNG_PLYDATA 2638
 #define LOCAL_CHLNG_PLYDATA_SIZE 12
 // am_criminal_damage
 #define LOCAL_CRIMDMG_SCORE 116
-#define LOCAL_CRIMDMG_SHDATA 121
-#define LOCAL_CRIMDMG_PLYDATA 2053
+#define LOCAL_CRIMDMG_SHDATA 144
+#define LOCAL_CRIMDMG_PLYDATA 2076
 #define LOCAL_CRIMDMG_PLYDATA_SIZE 7
 // business_battles
-#define LOCAL_BB_SHDATA 2465
+#define LOCAL_BB_SHDATA 2472
 // shop_controller
-#define LOCAL_SHOPCTRL_CHEAT 371
+#define LOCAL_SHOPCTRL_CHEAT 378
 #define LOCAL_SHOPCTRL_CHEAT_STATE LOCAL_SHOPCTRL_CHEAT + 3
 // blackjack
 #define LOCAL_BJ_DEALERCARDS_1 138
@@ -59,9 +59,9 @@
 #define LOCAL_BJ_DEALERCARDS LOCAL_BJ_DEALERCARDS_1 + LOCAL_BJ_DEALERCARDS_2
 #define LOCAL_BJ_DEALER_SIZE 13
 // am_gang_call
-#define LOCAL_GANGCALL_SHDATA 62
+#define LOCAL_GANGCALL_SHDATA 81
 // am_mp_property_int
-#define LOCAL_INT_SHDATA 10631
+#define LOCAL_INT_SHDATA 10638
 #define LOCAL_INT_SHDATA_KICK 690
 #pragma endregion ScrUpdate
 

@@ -58,15 +58,26 @@ namespace Stand
 		if (packet_src.isValid())
 		{
 			const auto rid = packet_src.getRockstarId();
-			for (auto i = pending.begin(); i != pending.end(); ++i)
+			pending.erase(std::remove_if(pending.begin(), pending.end(), [rid](const SessionPlayer& player)
 			{
-				if (i->rid == rid)
-				{
-					pending.erase(i);
-					break;
-				}
-			}
+				return player.rid == rid;
+			}), pending.end());
 		}
+	}
+
+	[[nodiscard]] static bool canSafelyApplyJoinRetaliation(const AbstractPlayer& player)
+	{
+		if (!is_session_started_and_transition_finished() || !player.isValid())
+		{
+			return false;
+		}
+
+		if (auto* cmd = player.getCommand())
+		{
+			return cmd->joined;
+		}
+
+		return false;
 	}
 
 	[[nodiscard]] static bool processKick(const AddressGamers::Peer* peer, const rage::netSocketAddress& sender_addr, const Codename& extra)
@@ -714,7 +725,7 @@ namespace Stand
 							}
 							if (g_comp_netcode.badbreakup_myself_karma)
 							{
-								if (packet_src.isValid())
+								if (canSafelyApplyJoinRetaliation(packet_src))
 								{
 									packet_src.removeFromPlayerMgr();
 								}
@@ -752,7 +763,8 @@ namespace Stand
 								}
 								else
 								{
-									if (g_comp_netcode.breakup_someoneelse_karma.shouldReactAgainst(packet_src))
+									if (canSafelyApplyJoinRetaliation(packet_src)
+										&& g_comp_netcode.breakup_someoneelse_karma.shouldReactAgainst(packet_src))
 									{
 										packet_src.kickBreakup();
 									}
@@ -769,6 +781,7 @@ namespace Stand
 									return;
 								}
 								if (target.isValid()
+									&& canSafelyApplyJoinRetaliation(packet_src)
 									&& g_comp_netcode.badbreakup_someoneelse_kick.shouldReactAgainst(packet_src)
 									)
 								{

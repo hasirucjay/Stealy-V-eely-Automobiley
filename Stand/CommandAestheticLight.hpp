@@ -39,7 +39,7 @@ namespace Stand
 						break;
 
 					case 1:
-						drawLight(rgb, CAM::GET_FINAL_RENDERED_CAM_COORD());
+						drawLight(rgb, CAMERA::GET_FINAL_RENDERED_CAM_COORD());
 						break;
 
 					case 2:

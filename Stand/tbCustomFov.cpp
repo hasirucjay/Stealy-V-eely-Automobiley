@@ -32,7 +32,7 @@ namespace Stand
 		}
 		else if (g_player_veh.isValid())
 		{
-			if (CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4)
+			if (CAMERA::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAMERA::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4)
 			{
 				custom_fov_this_tick = fp_in_vehicle->value;
 			}
@@ -43,7 +43,7 @@ namespace Stand
 		}
 		else
 		{
-			if (CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4)
+			if (CAMERA::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAMERA::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4)
 			{
 				custom_fov_this_tick = fp_on_foot->value;
 			}

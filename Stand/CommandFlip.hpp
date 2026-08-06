@@ -21,7 +21,7 @@ namespace Stand
 			Vehicle veh = Util::getVehicle(click);
 			if (veh != 0)
 			{
-				ENTITY::SET_ENTITY_ROTATION(veh, 0, 0, CAM::GET_GAMEPLAY_CAM_ROT(0).z, 0, true);
+				ENTITY::SET_ENTITY_ROTATION(veh, 0, 0, CAMERA::GET_GAMEPLAY_CAM_ROT(0).z, 0, true);
 			}
 		}
 	};

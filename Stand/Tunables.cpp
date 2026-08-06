@@ -331,7 +331,7 @@ namespace Stand
 	{
 		if (getBool(TUNAHASH("DISABLE_SESSION_SPOOFING")))
 		{
-			SessionSpoofing::copy_from = nullptr;
+			SessionSpoofing::clearCopyFrom();
 			SessionSpoofing::onDisable();
 		}
 	}

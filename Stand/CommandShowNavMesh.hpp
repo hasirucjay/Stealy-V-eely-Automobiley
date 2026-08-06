@@ -28,7 +28,7 @@ namespace Stand
 					{
 						Vector3 outPos;
 						float outHeading;
-						PATHFIND::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(x, y, pos.z, &outPos, &outHeading, 1, 1.0f, 0);
+						PATH::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(x, y, pos.z, &outPos, &outHeading, 1, 1.0f, 0);
 						auto heading_pos = outPos + v3(0.0f, 0.0f, outHeading).toDirNoZ();
 						DrawUtil3d::draw_line(outPos.x, outPos.y, outPos.z, heading_pos.x, heading_pos.y, heading_pos.z + 1.0f, (int)(g_renderer.arColour.x * 255.0f), (int)(g_renderer.arColour.y * 255.0f), (int)(g_renderer.arColour.z * 255.0f), (int)(g_renderer.arColour.w * 255.0f));
 					}

@@ -35,6 +35,8 @@ namespace Stand
 		inline static bool resend_script_join = false;
 
 		explicit CommandBlockBlockJoin(CommandList* const parent);
+		static void enqueueUnique(std::vector<SessionPlayer>& players, const rage::rlGamerInfo& info);
+		static void clearPendingState() noexcept;
 
 		void onChangeInner(Click& click) final;
 	};

@@ -76,7 +76,7 @@ namespace Stand
 								ButtonInstructions::setFreeMovementThisTick();
 							}
 
-							if (free_movement(move, CAM::GET_FINAL_RENDERED_CAM_ROT(2), speed, sprint))
+							if (free_movement(move, CAMERA::GET_FINAL_RENDERED_CAM_ROT(2), speed, sprint))
 							{
 								if (prioritise_synching->m_on)
 								{

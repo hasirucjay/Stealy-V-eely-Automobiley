@@ -50,7 +50,7 @@ namespace Stand
 				g_preview_ent = createPreviewEntity();
 				g_preview_ent.ensureHandleAndPointer();
 				v3 rot{};
-				rot.z = CAM::GET_FINAL_RENDERED_CAM_ROT(2).z;
+				rot.z = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).z;
 				if (g_preview_ent.isVehicle())
 				{
 					rot.z += 90.0f;
@@ -133,7 +133,7 @@ namespace Stand
 
 		[[nodiscard]] virtual v3 getEntityOrigin(AbstractEntity& ent) const
 		{
-			auto forward_vector = CAM::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * (ent.getDimensions().max() + CommandEntityPreviews::getAdditionalOffset(ent.getModel()));
+			auto forward_vector = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * (ent.getDimensions().max() + CommandEntityPreviews::getAdditionalOffset(ent.getModel()));
 			/*if (ent.is_object())
 			{
 				auto dist = forward_vector.distanceSquared(rage::scrVector{});
@@ -147,7 +147,7 @@ namespace Stand
 					forward_vector *= 2.0f;
 				}
 			}*/
-			return CAM::GET_FINAL_RENDERED_CAM_COORD() + forward_vector;
+			return CAMERA::GET_FINAL_RENDERED_CAM_COORD() + forward_vector;
 		}
 
 		void getRidOfPreview()

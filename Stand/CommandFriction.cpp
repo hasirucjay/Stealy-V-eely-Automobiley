@@ -29,7 +29,7 @@ namespace Stand
 				v3 dir{};
 				if (Input::canMovementCommandPerformMovement())
 				{
-					auto cam_rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+					auto cam_rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 					if (Input::isControlPressed(INPUT_LOOK_BEHIND)
 						&& !Input::isControlPressed(INPUT_SELECT_WEAPON)
 						)

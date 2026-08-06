@@ -2,8 +2,14 @@
 
 #include "CommandToggle.hpp"
 
+#include "AbstractEntity.hpp"
 #include "CommandListSelectVehicleModel.hpp"
-#include "gta_vehicle.hpp"
+#include "CommandSlider.hpp"
+#include "FiberPool.hpp"
+#include "input.hpp"
+#include "natives.hpp"
+#include "Script.hpp"
+#include "Util.hpp"
 #include "using_model.hpp"
 
 namespace Stand
@@ -11,45 +17,39 @@ namespace Stand
 	class CommandVehicleGunToggle : public CommandToggle
 	{
 	private:
-		std::vector<std::pair<AbstractEntity, time_t>> vehs;
+		int cooldown = 0;
 
-		[[nodiscard]] Vector3 getCameraOffset() const
+		void doThing(int ticks)
 		{
-			const auto rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
-			const auto pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
-			const auto dir = rot.toDir() * (float)distance->value;
-			return pos + dir;
-		}
-
-		void doThing(Hash hash)
-		{
-			auto rot = CAM::GET_GAMEPLAY_CAM_ROT(0);
-			auto pos = getCameraOffset();
-			auto veh = Util::createVehicle(hash, pos, rot.z);
-
-			if (veh.isValid())
+			const auto hash = model->getVehicle();
+			using_model(hash, [this, hash]
 			{
-				ENTITY::SET_ENTITY_COORDS_NO_OFFSET(veh, pos.x, pos.y, pos.z, false, false, false);
-				ENTITY::SET_ENTITY_ROTATION(veh, rot.x, rot.y, rot.z, 0, true);
-				ENTITY::SET_ENTITY_NO_COLLISION_ENTITY(veh, g_player_ent, true);
-				VEHICLE::SET_VEHICLE_FORWARD_SPEED(veh, (float)speed->value);
-
-				SOUP_IF_LIKELY (auto cveh = veh.getCVehicle())
+				auto cam_rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
+				auto cam_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
+				auto dir = cam_rot.toDir();
+				auto spawn_pos = v3(cam_pos.x + dir.x * 5.0f, cam_pos.y + dir.y * 5.0f, cam_pos.z + dir.z * 5.0f);
+				auto heading = ENTITY::GET_ENTITY_HEADING(g_player_ped);
+				auto veh = Util::createVehicle(hash, spawn_pos, heading);
+				if (veh.isValid())
 				{
-					// This reduces the likelihood that this feature overwhelms its own visiblity with explosion spam.
-					// Vehicles will still explode, but only moderately.
-					cveh->m_nVehicleFlags.bTakeLessDamage = true;
+					ENTITY::SET_ENTITY_ROTATION(veh, cam_rot.x, cam_rot.y, cam_rot.z, 2, TRUE);
+					VEHICLE::SET_VEHICLE_GRAVITY(veh, false);
+					VEHICLE::SET_VEHICLE_FORWARD_SPEED(veh, (float)speed->value);
+					const int dist = distance->value;
+					FiberPool::queueJob([veh, dist]() mutable
+					{
+						Script::current()->yield(dist * 1000);
+						veh.removeFromPlaneOfExistence();
+					});
 				}
-
-				veh.setCanMigrate(false);
-				vehs.emplace_back(std::make_pair(veh, get_current_time_millis()));
-			}
+			});
+			cooldown = ticks;
 		}
 
 	public:
-		CommandSlider* speed = nullptr;
-		CommandSlider* distance = nullptr;
-		CommandListSelectVehicleModel* model = nullptr;
+		CommandListSelectVehicleModel* model;
+		CommandSlider* speed;
+		CommandSlider* distance;
 
 		explicit CommandVehicleGunToggle(CommandList* const parent)
 			: CommandToggle(parent, LOC("VEHGUN"), CMDNAMES_OBF("vehiclegun"), LOC("VEHGUN_H"))
@@ -58,74 +58,21 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler([this]
+			registerScriptTickEventHandler(click, [this]
 			{
-				HANDLER_CHECK(this->m_on);
-
-				const bool rand = this->model->value == CommandListSelectVehicleModel::RANDOM;
-				const auto hash = this->model->getVehicle();
-
-				if (!rand && !STREAMING::HAS_MODEL_LOADED(hash))
+				if (!m_on)
 				{
-					STREAMING::REQUEST_MODEL(hash);
+					return false;
 				}
-
-				if (PED::IS_PED_SHOOTING(g_player_ped))
+				if (cooldown > 0)
 				{
-					if (STREAMING::HAS_MODEL_LOADED(hash))
-					{
-						doThing(hash);
-					}
-					else
-					{
-						FiberPool::queueJob([=]
-						{
-							using_model(hash, [this, hash]
-							{
-								doThing(hash);
-							});
-						});
-					}
+					--cooldown;
 				}
-
-				if (g_gui.isUnloadPending())
+				else if (Input::isCommandInputAllowed() && Input::isPressingAttack())
 				{
-					for (auto& [veh, _] : vehs)
-					{
-						veh.removeFromPlaneOfExistence();
-					}
-
-					vehs.clear();
+					doThing(10);
 				}
-				else
-				{
-					for (auto i = vehs.begin(); i != vehs.end(); )
-					{
-						auto& veh = (*i).first;
-						auto created = (*i).second;
-
-						if (!veh.isValid())
-						{
-							i = vehs.erase(i);
-						}
-						else if (vehs.size() > 40 || GET_MILLIS_SINCE(created) > 120'000)
-						{
-							veh.removeFromPlaneOfExistence();
-							i = vehs.erase(i);
-						}
-						else
-						{
-							if (GET_MILLIS_SINCE(created) < 2'000)
-							{
-								ENTITY::SET_ENTITY_NO_COLLISION_ENTITY(veh, g_player_ent, TRUE);
-							}
-
-							++i;
-						}
-					}
-				}
-
-				HANDLER_END;
+				return true;
 			});
 		}
 	};

@@ -14,8 +14,8 @@ namespace Stand
     {
         return PositionStateWithCam(
             PositionState::save(),
-            CAM::GET_FINAL_RENDERED_CAM_COORD(),
-            CAM::GET_FINAL_RENDERED_CAM_ROT(2)
+            CAMERA::GET_FINAL_RENDERED_CAM_COORD(),
+            CAMERA::GET_FINAL_RENDERED_CAM_ROT(2)
         );
     }
 

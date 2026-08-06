@@ -20,7 +20,7 @@ namespace Stand
 
 	float v_getZFromHeightmap(float x, float y)
 	{
-		return PATHFIND::GET_APPROX_HEIGHT_FOR_POINT(x, y);
+		return PATH::GET_APPROX_HEIGHT_FOR_POINT(x, y);
 	}
 
 	void v_world2screen(float worldX, float worldY, float worldZ, float* screenX, float* screenY)

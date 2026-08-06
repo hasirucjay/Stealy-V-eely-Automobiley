@@ -154,7 +154,7 @@
 #include "CommandPlayerKickPickup.hpp"
 
 #include "CommandPlayerCrashElegant.hpp"
-#if defined(STAND_DEBUG) && HAVE_SEND_CLONE_SYNC_HOOK
+#if (defined(STAND_DEBUG) || defined(STAND_DEV)) && HAVE_SEND_CLONE_SYNC_HOOK
 #include "CommandPlayerCrashTask.hpp"
 #endif
 #if HAVE_SEND_CLONE_CREATE_HOOK
@@ -576,7 +576,7 @@ namespace Stand
 			crash->createChild<CommandPlayerCrashElegant>();
 			if (this->pp->single)
 			{
-#if defined(STAND_DEBUG) && HAVE_SEND_CLONE_SYNC_HOOK
+#if (defined(STAND_DEBUG) || defined(STAND_DEV)) && HAVE_SEND_CLONE_SYNC_HOOK
 				crash->createChild<CommandPlayerCrashTask>();
 #endif
 #if HAVE_SEND_CLONE_CREATE_HOOK

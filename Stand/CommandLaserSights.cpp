@@ -65,7 +65,7 @@ namespace Stand
 #if true
 					g_renderer.drawLineCP(x, y, 0.5, 0.5, g_renderer.arColour);
 #else
-					const auto target_pos = CAM::GET_FINAL_RENDERED_CAM_COORD() + (CAM::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * WEAPON::GET_MAX_RANGE_OF_CURRENT_PED_WEAPON(g_player_ped));
+					const auto target_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD() + (CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * WEAPON::GET_MAX_RANGE_OF_CURRENT_PED_WEAPON(g_player_ped));
 					float target_x, target_y;
 					if (GRAPHICS::GET_SCREEN_COORD_FROM_WORLD_COORD(
 						target_pos.x,

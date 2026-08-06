@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include <soup/AtomicStack.hpp>
@@ -20,9 +22,12 @@ namespace Stand
 		inline static bool coloading_with_any_menu = false;
 		inline static bool coloading_with_2take1menu = false;
 		inline static bool coloading_with_cherax = false;
+		inline static std::string existing_hook_names{};
 		inline static soup::AtomicStack<ExistingHookCheck> existing_hook_checks{};
 
 		static void addCheck(const Codename& cn, void* addr, const void* data, size_t size);
+		static void classifyExistingHooks(std::string_view hooks);
+		[[nodiscard]] static bool shouldYieldHook(const Codename& name);
 
 		static void check();
 	};

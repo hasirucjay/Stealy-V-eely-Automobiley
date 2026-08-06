@@ -125,11 +125,11 @@ namespace Stand
 					auto i = cam_debug_names.begin();
 					while (i != cam_debug_names.end())
 					{
-						if (!CAM::DOES_CAM_EXIST(i->first))
+						if (!CAMERA::DOES_CAM_EXIST(i->first))
 						{
 							i = cam_debug_names.erase(i);
 						}
-						g_renderer.draw3dTextThisTickH(CAM::GET_CAM_COORD(i->first), i->second, 1.0);
+						g_renderer.draw3dTextThisTickH(CAMERA::GET_CAM_COORD(i->first), i->second, 1.0);
 						i++;
 					}
 					return !cam_debug_names.empty();

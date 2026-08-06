@@ -67,12 +67,12 @@ namespace Stand
 						break;
 
 					case 2:
-						notif_rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+						notif_rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 						notif_rot.x = 0.0f;
 						break;
 
 					case 3:
-						notif_rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+						notif_rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 						break;
 					}
 					if (!g_cam_veh.isValid())
@@ -82,18 +82,18 @@ namespace Stand
 					notif_rot.y = 0.0f;
 
 					const bool is_first_person = (
-						(CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4)
-						|| CAM::IS_CINEMATIC_IDLE_CAM_RENDERING()
+						(CAMERA::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAMERA::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4)
+						|| CAMERA::IS_CINEMATIC_IDLE_CAM_RENDERING()
 						);
 
 					float scalef;
 					if (dynamic_scaling->m_on
 						&& !is_first_person
 						&& !g_tb_freecam.isEnabled()
-						&& !CAM::IS_CINEMATIC_CAM_RENDERING()
+						&& !CAMERA::IS_CINEMATIC_CAM_RENDERING()
 						)
 					{
-						scalef = dynamic_scaler->getFloatValue() * (CAM::GET_FINAL_RENDERED_CAM_COORD().distance(pos));
+						scalef = dynamic_scaler->getFloatValue() * (CAMERA::GET_FINAL_RENDERED_CAM_COORD().distance(pos));
 					}
 					else
 					{
@@ -158,7 +158,7 @@ namespace Stand
 	void CommandArNotifications::ensureTextReadability(v3& notif_rot) const
 	{
 		if (ensure_text_readability->m_on
-			&& Util::angles_dist(notif_rot.z, CAM::GET_FINAL_RENDERED_CAM_ROT(2).z) > 90.0f
+			&& Util::angles_dist(notif_rot.z, CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).z) > 90.0f
 			)
 		{
 			notif_rot.z += 180.0f;

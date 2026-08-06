@@ -21,7 +21,7 @@ namespace Stand
 			}
 			last_pos = pos;
 		}
-		if (CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4)
+		if (CAMERA::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAMERA::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4)
 		{
 			for (float i = line_i - 180.0f; i > line_i - 260.0f; i -= 1.0f)
 			{

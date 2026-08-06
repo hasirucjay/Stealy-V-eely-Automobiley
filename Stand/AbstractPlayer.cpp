@@ -1,4 +1,6 @@
-﻿#include "AbstractPlayer.hpp"
+#include "AbstractPlayer.hpp"
+
+#include <cstring>
 
 #include <fmt/core.h>
 
@@ -83,6 +85,124 @@
 
 namespace Stand
 {
+	namespace
+	{
+		rage::rlGamerInfo& getUndiscoveredGamerInfo() noexcept
+		{
+			static rage::rlGamerInfo gamer_info = []() noexcept
+			{
+				rage::rlGamerInfo info{};
+				strcpy(info.name, "UndiscoveredPlayer");
+				return info;
+			}();
+			return gamer_info;
+		}
+
+		[[nodiscard]] rage::netConnectionManager* tryGetConnectionMgr() noexcept
+		{
+			return pointers::connection_mgr ? *pointers::connection_mgr : nullptr;
+		}
+
+		[[nodiscard]] CNetworkSession* tryGetNetworkSession() noexcept
+		{
+			return pointers::network_session ? *pointers::network_session : nullptr;
+		}
+
+		[[nodiscard]] rage::snSession* tryGetSnSession() noexcept
+		{
+			if (auto network_session = tryGetNetworkSession())
+			{
+				return network_session->session;
+			}
+			return nullptr;
+		}
+
+		[[nodiscard]] bool isStableMgrPlayerSlot(const CNetworkPlayerMgr* mgr, const compactplayer_t slot, const CNetGamePlayer* player) noexcept
+		{
+			if (mgr == nullptr || player == nullptr)
+			{
+				return false;
+			}
+
+			__try
+			{
+				// 1.73 can temporarily expose ghost entries where multiple manager slots point at the same
+				// net player object, or where a stale slot still points at a player whose physical index
+				// has already moved. Treat those as non-players so they never enter the rest of the flow.
+				if (player->player_id != slot)
+				{
+					return false;
+				}
+
+				if (player == mgr->localPlayer)
+				{
+					return true;
+				}
+
+				auto* const player_info = player->GetPlayerInfoImpl();
+				if (player_info == nullptr)
+				{
+					return false;
+				}
+
+				// A physical session cannot contain the local CPlayerInfo or Rockstar ID twice.
+				// Co-loaded hooks can briefly expose exactly that alias while a gamer is admitted.
+				if (auto* const local_info = mgr->localPlayer ? mgr->localPlayer->GetPlayerInfoImpl() : nullptr)
+				{
+					if (player_info == local_info)
+					{
+						return false;
+					}
+					const auto local_rid = local_info->gamer_info.getHandle().rockstar_id;
+					const auto player_rid = player_info->gamer_info.getHandle().rockstar_id;
+					if (local_rid != 0 && player_rid == local_rid)
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER)
+			{
+				return false;
+			}
+		}
+
+		[[nodiscard]] bool trySendComplaintToPeer(const rage::netPeerId target_peer_id) noexcept
+		{
+			if (!pointers::send_netComplaintMsg)
+			{
+				return false;
+			}
+
+			auto con_mgr = tryGetConnectionMgr();
+			auto session = tryGetSnSession();
+			if (!con_mgr || !session)
+			{
+				return false;
+			}
+
+			auto host = AbstractPlayer::getHost();
+			if (!host.isValid())
+			{
+				return false;
+			}
+
+			auto endpoint = host.getEndpoint();
+			if (!endpoint)
+			{
+				return false;
+			}
+
+			rage::netComplaintMsg packet{};
+			packet.sender = g_player.getPeerId();
+			packet.targets[0] = target_peer_id;
+			packet.num_targets = 1;
+			return pointers::send_netComplaintMsg(con_mgr, endpoint->GetAddress(), session->channel_id, &packet, 0);
+		}
+	}
+
 	CNetworkPlayerMgr* AbstractPlayer::getNetworkPlayerMgrIfApplicable()
 	{
 		if (auto mgr = *pointers::network_player_mgr)
@@ -225,7 +345,19 @@ namespace Stand
 
 	int AbstractPlayer::getPlayerCount()
 	{
-		return is_session_or_transition_active(false) ? (*pointers::network_player_mgr)->NumPlayers : 1;
+		if (auto mgr = getNetworkPlayerMgrIfApplicable())
+		{
+			int count = 0;
+			for (compactplayer_t p = 0; p != MAX_PLAYERS; ++p)
+			{
+				if (isStableMgrPlayerSlot(mgr, p, mgr->Players[p]))
+				{
+					++count;
+				}
+			}
+			return count;
+		}
+		return 1;
 	}
 
 	std::vector<AbstractPlayer> AbstractPlayer::listAll()
@@ -235,7 +367,7 @@ namespace Stand
 			std::vector<AbstractPlayer> players = {};
 			for (compactplayer_t p = 0; p != MAX_PLAYERS; ++p)
 			{
-				if (mgr->Players[p] != nullptr)
+				if (isStableMgrPlayerSlot(mgr, p, mgr->Players[p]))
 				{
 					players.emplace_back(p);
 				}
@@ -252,7 +384,7 @@ namespace Stand
 			std::vector<AbstractPlayer> players = {};
 			for (compactplayer_t p = 0; p != MAX_PLAYERS; ++p)
 			{
-				if (mgr->Players[p] == nullptr)
+				if (!isStableMgrPlayerSlot(mgr, p, mgr->Players[p]))
 				{
 					continue;
 				}
@@ -280,7 +412,7 @@ namespace Stand
 			std::vector<AbstractPlayer> players = {};
 			for (compactplayer_t p = 0; p != MAX_PLAYERS; ++p)
 			{
-				if (mgr->Players[p] == nullptr)
+				if (!isStableMgrPlayerSlot(mgr, p, mgr->Players[p]))
 				{
 					continue;
 				}
@@ -439,14 +571,7 @@ namespace Stand
 		}
 		if (auto mgr = getNetworkPlayerMgrIfApplicable())
 		{
-			__try
-			{
-				return mgr->Players[p] != nullptr;
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				return false;
-			}
+			return isStableMgrPlayerSlot(mgr, p, mgr->Players[p]);
 		}
 		return p == 0;
 	}
@@ -868,7 +993,11 @@ if (cmd->flags & (1 << id)) \
 		{
 			if (auto mgr = getNetworkPlayerMgrIfApplicable())
 			{
-				return mgr->Players[p];
+				auto* const player = mgr->Players[p];
+				if (isStableMgrPlayerSlot(mgr, p, player))
+				{
+					return player;
+				}
 			}
 		}
 		return nullptr;
@@ -882,12 +1011,9 @@ if (cmd->flags & (1 << id)) \
 			{
 				return g_player_ped.getPlayerInfo();
 			}
-			if (auto mgr = getNetworkPlayerMgrIfApplicable())
+			if (auto* player = getCNetGamePlayer())
 			{
-				if (auto player = mgr->Players[p])
-				{
-					return player->player_info;
-				}
+				return player->GetPlayerInfoImpl();
 			}
 		}
 		return nullptr;
@@ -895,17 +1021,18 @@ if (cmd->flags & (1 << id)) \
 
 	CPlayerInfo* AbstractPlayer::getPlayerInfo() const
 	{
+		if (*this == g_player)
+		{
+			return g_player_ped.getPlayerInfo();
+		}
 		if (isValid())
 		{
-			if (auto mgr = getNetworkPlayerMgrIfApplicable())
+			if (auto* player = getCNetGamePlayer())
 			{
-				if (auto player = mgr->Players[p])
-				{
-					return player->player_info;
-				}
+				return player->GetPlayerInfoImpl();
 			}
 		}
-		return g_player_ped.getPlayerInfo();
+		return nullptr;
 	}
 
 	rage::rlGamerInfo* AbstractPlayer::getGamerInfoNoFallback() const
@@ -924,15 +1051,15 @@ if (cmd->flags & (1 << id)) \
 
 	rage::rlGamerInfo* AbstractPlayer::getGamerInfo() const
 	{
-		if (p != g_player)
+		if (p == g_player)
 		{
-			auto* player_info = getPlayerInfo();
-			if (player_info != nullptr)
-			{
-				return &player_info->gamer_info;
-			}
+			return pointers::rlPresence_m_ActingGamerInfo;
 		}
-		return pointers::rlPresence_m_ActingGamerInfo;
+		if (auto* player_info = getPlayerInfo())
+		{
+			return &player_info->gamer_info;
+		}
+		return &getUndiscoveredGamerInfo();
 	}
 
 	rage::netPeerAddress* AbstractPlayer::getPeer() const
@@ -2369,7 +2496,10 @@ if (cmd->flags & (1 << id)) \
 		if (auto info = getGamerInfoNoFallback())
 		{
 			rage::rlGamerHandle complainer{};
-			pointers::CNetworkSession_KickPlayer(*pointers::network_session, info->getHandle(), 0, type, 0, complainer);
+			if (auto network_session = tryGetNetworkSession())
+			{
+				pointers::CNetworkSession_KickPlayer(network_session, info->getHandle(), 0, type, 0, complainer);
+			}
 		}
 	}
 
@@ -2840,12 +2970,10 @@ if (cmd->flags & (1 << id)) \
 				{
 					break;
 				}
-
-				rage::netComplaintMsg packet;
-				packet.sender = g_player.getPeerId();
-				packet.targets[0] = target.getPeerId();
-				packet.num_targets = 1;
-				pointers::send_netComplaintMsg(*pointers::connection_mgr, AbstractPlayer::getHost().getEndpoint()->GetAddress(), (*pointers::network_session)->session->channel_id, &packet, 0);
+				if (!trySendComplaintToPeer(target.getPeerId()))
+				{
+					break;
+				}
 
 				Script::current()->yield();
 				Script::current()->yield();
@@ -2957,13 +3085,15 @@ if (cmd->flags & (1 << id)) \
 	{
 		if (auto endpoint = getEndpoint())
 		{
-			rage::snSession* const session = (*pointers::network_session)->session;
-			endpoint->removeGamer(
-				session->channel_id,
-				session->GetSessionId(),
-				target,
-				remove_reason
-			);
+			if (auto session = tryGetSnSession())
+			{
+				endpoint->removeGamer(
+					session->channel_id,
+					session->GetSessionId(),
+					target,
+					remove_reason
+				);
+			}
 		}
 	}
 
@@ -3003,7 +3133,11 @@ if (cmd->flags & (1 << id)) \
 
 	void AbstractPlayer::removeFromSessionMgr(int remove_reason) const
 	{
-		rage::snSession* const session = (*pointers::network_session)->session;
+		auto session = tryGetSnSession();
+		if (!session)
+		{
+			return;
+		}
 		const auto con_id = g_player.isHost()
 			? getCxnId(session->channel_id)
 			: AbstractPlayer::getHost().getCxnId(session->channel_id)
@@ -3335,8 +3469,8 @@ if (cmd->flags & (1 << id)) \
 			|| msg.find(L"p888.me") != std::wstring::npos
 			|| msg.find(L"shopgta5.com") != std::wstring::npos
 			|| msg.find(L"sentinelgames.store") != std::wstring::npos
-			|| msg.find(L"莱斯特电玩") != std::wstring::npos // Selling Recovery on WeChat
-			|| msg.find(L"莱信斯公特") != std::wstring::npos // Selling Recovery on WeChat
+			|| msg.find(L"?????") != std::wstring::npos // Selling Recovery on WeChat
+			|| msg.find(L"?????") != std::wstring::npos // Selling Recovery on WeChat
 			;
 	}
 
@@ -3458,7 +3592,7 @@ if (cmd->flags & (1 << id)) \
 	{
 		if (*this == g_player)
 		{
-			return CAM::GET_FINAL_RENDERED_CAM_COORD();
+			return CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 		}
 		if (auto n = getPed().getNetObject<CNetObjPlayer>())
 		{
@@ -3471,7 +3605,7 @@ if (cmd->flags & (1 << id)) \
 	{
 		if (*this == g_player)
 		{
-			return CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+			return CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 		}
 		v3 rot{};
 		if (auto n = getPed().getNetObject<CNetObjPlayer>())

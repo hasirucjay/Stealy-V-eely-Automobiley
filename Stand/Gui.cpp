@@ -21,6 +21,7 @@
 #include "ChatCommandsCommon.hpp"
 #include "ChatHistory.hpp"
 #include "CleanupHelper.hpp"
+#include "ColoadMgr.hpp"
 #include "ColonsAndTabs.hpp"
 #include "Commandbox.hpp"
 #include "CommandFlyThroughWindscreen.hpp"
@@ -2082,8 +2083,14 @@ namespace Stand
 
 	void Gui::removePlayer(const AbstractPlayer p, CommandPlayer* const player_command)
 	{
+		if (player_command == nullptr
+			|| player_command->queued_for_deletion
+			)
+		{
+			return;
+		}
+
 		// Player list
-		player_commands[p] = nullptr;
 		player_command->queued_for_deletion = true;
 		player_command->onLeave();
 		FiberPool::queueJob([p, player_command]
@@ -2104,6 +2111,10 @@ namespace Stand
 			Script::current()->yield();
 
 			EXCEPTIONAL_LOCK_WRITE_YIELDING(g_gui.root_mtx)
+			if (g_gui.player_commands[p] == player_command)
+			{
+				g_gui.player_commands[p] = nullptr;
+			}
 			player_command->beGoneRootWriteLocked();
 			EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
 
@@ -3378,6 +3389,8 @@ namespace Stand
 	{
 		const bool forced_flag_update = CommandPlayer::force_flag_update;
 		bool update_player_list_web_state = false;
+		bool player_list_structure_changed = false;
+		Command* prev_focus_before_player_list_change = nullptr;
 		std::vector<AbstractPlayer> players{};
 		if (!isUnloadPending() && !killswitched)
 		{
@@ -3390,16 +3403,44 @@ namespace Stand
 				auto* const command = player_commands[p];
 				if (command != nullptr)
 				{
+					if (command->queued_for_deletion)
+					{
+						continue;
+					}
+
+					auto* const gamer_info = p.getGamerInfoNoFallback();
 					if (!command->force_recreate)
 					{
-						if (command->rid == p.getRockstarId())
+						// Remote identity data is often incomplete while a public lobby is still streaming in.
+						// Treat that state as "not settled yet" instead of tearing down and recreating the
+						// entire player command every other tick.
+						if (gamer_info == nullptr || gamer_info->getHandle().rockstar_id == 0)
 						{
 							command->doWork(thread_context);
 							continue;
 						}
-						if (!command->changed_info)
+
+						const auto current_rid = gamer_info->getHandle().rockstar_id;
+						if (command->rid == current_rid)
 						{
-							command->changed_info = true;
+							command->pending_identity_rid = 0;
+							command->pending_identity_since = 0;
+							command->doWork(thread_context);
+							continue;
+						}
+
+						if (command->pending_identity_rid != current_rid)
+						{
+							command->pending_identity_rid = current_rid;
+							command->pending_identity_since = get_current_time_millis();
+							command->doWork(thread_context);
+							continue;
+						}
+
+						const time_t identity_settle_time = ColoadMgr::coloading_with_cherax ? 2000 : 100;
+						if (GET_MILLIS_SINCE(command->pending_identity_since) < identity_settle_time)
+						{
+							command->doWork(thread_context);
 							continue;
 						}
 					}
@@ -3424,7 +3465,6 @@ namespace Stand
 				continue;
 			}
 			managed_to_lock = true;
-			Command* prev_focus = nullptr;
 			bool notify_join = false;
 			CommandPlayer* command = nullptr;
 			__try
@@ -3433,17 +3473,13 @@ namespace Stand
 				{
 					p.spoofName();
 				}
-				prev_focus = player_list->getFocus();
+				if (!player_list_structure_changed)
+				{
+					prev_focus_before_player_list_change = player_list->getFocus();
+				}
 				notify_join = (p != g_player && players_discovered && !is_session_transition_active(true));
 				command = player_list->createChild<CommandPlayer>((compactplayer_t)p, notify_join);
-			}
-			__EXCEPTIONAL()
-			{
-			}
-			PlayerListSort::update();
-			__try
-			{
-				player_list->processChildrenUpdateWithPossibleCursorDisplacement(prev_focus, thread_context);
+				player_list_structure_changed = true;
 			}
 			__EXCEPTIONAL()
 			{
@@ -3475,6 +3511,17 @@ namespace Stand
 				players_discovered = true;
 			}
 		}
+		if (player_list_structure_changed)
+		{
+			PlayerListSort::update();
+			__try
+			{
+				player_list->processChildrenUpdateWithPossibleCursorDisplacement(prev_focus_before_player_list_change, thread_context);
+			}
+			__EXCEPTIONAL()
+			{
+			}
+		}
 		else
 		{
 			// if managed_to_lock is true, we can imply that the player list was sorted, so we can skip this
@@ -3494,6 +3541,10 @@ namespace Stand
 		for (const auto& command : player_commands)
 		{
 			if (command == nullptr)
+			{
+				continue;
+			}
+			if (command->queued_for_deletion)
 			{
 				continue;
 			}

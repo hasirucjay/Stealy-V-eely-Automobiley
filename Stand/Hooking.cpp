@@ -1509,7 +1509,11 @@ namespace Stand::hooks
 
 	rage::rlGamerInfo* __fastcall CNetGamePlayer_GetGamerInfo(CNetGamePlayer* player)
 	{
-		rage::rlGamerInfo* gamer_info = player->GetGamerInfoImpl();
+		rage::rlGamerInfo* gamer_info = player != nullptr ? OG(CNetGamePlayer_GetGamerInfo)(player) : nullptr;
+		if (gamer_info == nullptr)
+		{
+			return nullptr;
+		}
 		if (auto e = g_hooking.name_overrides.find(gamer_info->peer.id); e != g_hooking.name_overrides.end())
 		{
 			memcpy(&rlGamerInfo_spoofing_buf, gamer_info, sizeof(rage::rlGamerInfo));
@@ -4055,7 +4059,13 @@ namespace Stand::hooks
 			if (id == REQUEST_OBJECT_IDS_MSG)
 			{
 				//g_logger.log(fmt::format("Sending RequestObjectIdsMsg to {}", receiver->GetLogName()));
-				CommandBlockBlockJoin::pending_object_ids.emplace_back(SessionPlayer(*recipient->GetGamerInfoImpl()));
+					if (recipient != nullptr)
+					{
+						if (const auto* gamer_info = recipient->GetGamerInfoImpl())
+						{
+							CommandBlockBlockJoin::enqueueUnique(CommandBlockBlockJoin::pending_object_ids, *gamer_info);
+						}
+					}
 			}
 			else if (id == MSG_SCRIPT_JOIN)
 			{
@@ -4069,7 +4079,13 @@ namespace Stand::hooks
 				}
 				else
 				{
-					CommandBlockBlockJoin::pending_script_join_acks.emplace_back(SessionPlayer(*recipient->GetGamerInfoImpl()));
+					if (recipient != nullptr)
+					{
+						if (const auto* gamer_info = recipient->GetGamerInfoImpl())
+						{
+							CommandBlockBlockJoin::enqueueUnique(CommandBlockBlockJoin::pending_script_join_acks, *gamer_info);
+						}
+					}
 				}
 			}
 			return OG(rage_netPlayerMgrBase_SendBuffer)(a1, recipient, data, size, sendFlags, seq, sender);
@@ -4911,12 +4927,16 @@ namespace Stand::hooks
 				for (int i = 0; i != MAX_PLAYERS; ++i)
 				{
 					if (auto cngp = (*pointers::network_player_mgr)->Players[i];
-						cngp && cngp->player_info && cngp->player_info->m_ped && cngp->player_info->m_ped->m_net_object
+						cngp
 						)
 					{
-						SOUP_ASSERT(*reinterpret_cast<void**>(cngp->player_info->m_ped->m_net_object) != nullptr);
-						correct_vft_pointer = *reinterpret_cast<void**>(cngp->player_info->m_ped->m_net_object);
-						break;
+						if (auto* player_info = cngp->GetPlayerInfoImpl();
+							player_info && player_info->m_ped && player_info->m_ped->m_net_object)
+						{
+							SOUP_ASSERT(*reinterpret_cast<void**>(player_info->m_ped->m_net_object) != nullptr);
+							correct_vft_pointer = *reinterpret_cast<void**>(player_info->m_ped->m_net_object);
+							break;
+						}
 					}
 				}
 			}
@@ -4930,12 +4950,14 @@ namespace Stand::hooks
 				for (int i = 0; i != MAX_PLAYERS; ++i)
 				{
 					if (auto cngp = (*pointers::network_player_mgr)->Players[i];
-						cngp && cngp->player_info && cngp->player_info->m_ped && cngp->player_info->m_ped->m_net_object
+						cngp
 						)
 					{
-						if (correct_vft_pointer != *reinterpret_cast<void**>(cngp->player_info->m_ped->m_net_object))
+						if (auto* player_info = cngp->GetPlayerInfoImpl();
+							player_info && player_info->m_ped && player_info->m_ped->m_net_object
+							&& correct_vft_pointer != *reinterpret_cast<void**>(player_info->m_ped->m_net_object))
 						{
-							*reinterpret_cast<void**>(cngp->player_info->m_ped->m_net_object) = correct_vft_pointer;
+							*reinterpret_cast<void**>(player_info->m_ped->m_net_object) = correct_vft_pointer;
 							ret = true;
 						}
 					}
@@ -7050,7 +7072,7 @@ to_recover.emplace_back(addr, *addr); \
 	}
 #endif
 
-	bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, const char* name, uint64_t metricTime, rage::rlMetric* metric)
+	bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, bool* failed, void* unk_r8, void* unk_r9, rage::rlMetric* metric)
 	{
 		bool allow = true;
 		__try
@@ -7226,7 +7248,7 @@ to_recover.emplace_back(addr, *addr); \
 		{
 			__try
 			{
-				return OG(rage_rlTelemetry_Export)(rw, name, metricTime, metric);
+				return OG(rage_rlTelemetry_Export)(rw, failed, unk_r8, unk_r9, metric);
 			}
 			__EXCEPTIONAL()
 			{
@@ -7801,7 +7823,7 @@ to_recover.emplace_back(addr, *addr); \
 					{
 						if (ts == TRANSITION_STATE_WAIT_JOIN_FM_SESSION)
 						{
-							CommandBlockBlockJoin::session_players.emplace_back(SessionPlayer(reinterpret_cast<rage::snEventAddedGamer*>(event)->gamer));
+							CommandBlockBlockJoin::enqueueUnique(CommandBlockBlockJoin::session_players, reinterpret_cast<rage::snEventAddedGamer*>(event)->gamer);
 						}
 					}
 					else

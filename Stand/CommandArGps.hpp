@@ -94,7 +94,7 @@ namespace Stand
 						route_for.reset();
 						route.clear();
 
-						PathFind::nodes.clear(); // really shitty fix for random issues where pathfinding gives impossible routes
+						PATH::nodes.clear(); // really shitty fix for random issues where pathfinding gives impossible routes
 					}
 				}
 				else

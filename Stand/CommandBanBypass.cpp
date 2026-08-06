@@ -91,7 +91,7 @@ namespace Stand
 							&& SCRIPT::GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(ATSTRINGHASH("freemode")) <= 0
 							)
 						{
-							SYSTEM::START_NEW_SCRIPT("freemode", 32750);
+							BUILTIN::START_NEW_SCRIPT("freemode", 32750);
 						}
 					}*/
 

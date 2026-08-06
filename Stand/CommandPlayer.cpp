@@ -17,6 +17,7 @@
 #include "cidr.hpp"
 #include "ColoadMgr.hpp"
 #include "CNetGamePlayer.hpp"
+#include "CNetworkPlayerMgr.hpp"
 #include "CNetworkSession.hpp"
 #include "CommandHistoricPlayer.hpp"
 #include "CommandPlayerClassifier.hpp"
@@ -49,6 +50,7 @@
 #include "natives.hpp"
 #include "netIpAddress.hpp"
 #include "netSocketAddress.hpp"
+#include "nettypes.hpp"
 #include "NuancedEventWithExtraData.hpp"
 #include "PlayerHistory.hpp"
 #include "PlayerListSort.hpp"
@@ -100,6 +102,24 @@
 
 namespace Stand
 {
+	namespace
+	{
+		[[nodiscard]] bool commandPlayerRepresentsSelf(const AbstractPlayer& player, compactplayer_t p) noexcept
+		{
+			if (p == g_player)
+			{
+				return true;
+			}
+
+			if (auto* mgr = AbstractPlayer::getNetworkPlayerMgrIfApplicable(); mgr && mgr->localPlayer)
+			{
+				return player.getCNetGamePlayer() == mgr->localPlayer;
+			}
+
+			return false;
+		}
+	}
+
 	char32_t CommandPlayer::flag_chars[/*FLAG_COUNT*/] = {
 		0, // FLAG_SELF
 		'F', // FLAG_FRIEND
@@ -142,13 +162,13 @@ namespace Stand
 		//,INIT_RATELIMIT(veh_appearance_ratelimit, 5000, 40)
 	{
 		// Init vars
-		const bool is_self = (p == g_player);
+		AbstractPlayer ap(p);
+		const bool is_self = commandPlayerRepresentsSelf(ap, p);
 		if (is_self)
 		{
 			did_rid_spoof_lookup = true;
 			flags |= 1 << FLAG_SELF;
 		}
-		AbstractPlayer ap(p);
 		peerid = ap.getPeerId();
 		rid = ap.getRockstarId();
 		updateCachedVars();
@@ -272,15 +292,18 @@ namespace Stand
 					reactions |= historic_player->join_reactions;
 #endif
 				}
-				if (auto toast_flags = flow_event_reactions_to_toast_flags(reactions))
+				if (auto* gamer_info = ap.getGamerInfoNoFallback())
 				{
-					Util::toast(LANG_FMT("JOINT", ap.getGamerInfo()->toString()), std::move(toast_flags));
-				}
-				if (!g_player.isHost()
-					&& hooks::process_join(ap.getGamerInfo(), false)
-					)
-				{
-					reactions |= REACTION_KICK;
+					if (auto toast_flags = flow_event_reactions_to_toast_flags(reactions))
+					{
+						Util::toast(LANG_FMT("JOINT", gamer_info->toString()), std::move(toast_flags));
+					}
+					if (!g_player.isHost()
+						&& hooks::process_join(gamer_info, false)
+						)
+					{
+						reactions |= REACTION_KICK;
+					}
 				}
 				applyReactions(reactions);
 			}
@@ -290,33 +313,44 @@ namespace Stand
 		{
 			const auto prev_classification = classifier.classify();
 
-			for (auto& event : ap.getGamerInfo()->checkDetections(is_self))
+			if (auto* gamer_info = ap.getGamerInfoNoFallback())
 			{
-				if (event.isPreemptive())
+				for (auto& event : gamer_info->checkDetections(is_self))
 				{
-					addOrUpdateDetection(event, event.getName());
-				}
-				else
-				{
-					applyReactions(ap.getReactions(event.type), std::move(event), true);
+					if (event.isPreemptive())
+					{
+						addOrUpdateDetection(event, event.getName());
+					}
+					else
+					{
+						applyReactions(ap.getReactions(event.type), std::move(event), true);
+					}
 				}
 			}
 
 			if (auto cngp = ap.getCNetGamePlayer())
 			{
-				if (cngp->m_NatType == 0
-					|| (cngp->m_NatType != ap.getGamerInfo()->peer.address.nat_type && ap.getGamerInfo()->peer.address.nat_type != 0)
-					)
+				const bool nat_state_settled = joined || GET_MILLIS_SINCE(discovery) > 15000;
+				if (nat_state_settled)
 				{
-					if (auto host_cngp = AbstractPlayer::getHost().getCNetGamePlayer())
+					if (const auto* gamer_info = ap.getGamerInfo())
 					{
-						// Only do this detection if we're the host or this player is the host,
-						// to rule out the current host spoofing this for the whole lobby.
-						if (cngp == host_cngp
-							|| g_player.isHost()
-							)
+						const auto advertised_nat_type = gamer_info->peer.address.nat_type;
+						if (cngp->m_NatType < rage::NET_NAT_NUM_TYPES
+							&& advertised_nat_type < rage::NET_NAT_NUM_TYPES
+							&& cngp->m_NatType != advertised_nat_type)
 						{
-							applyReactions(ap.getReactions(FlowEvent::MOD_LLLUBE), NuancedEvent(FlowEvent::MOD_LLLUBE), true);
+							if (auto host_cngp = AbstractPlayer::getHost().getCNetGamePlayer())
+							{
+								// Only do this detection if we're the host or this player is the host,
+								// to rule out the current host spoofing this for the whole lobby.
+								if (cngp == host_cngp
+									|| g_player.isHost()
+									)
+								{
+									applyReactions(ap.getReactions(FlowEvent::MOD_LLLUBE), NuancedEvent(FlowEvent::MOD_LLLUBE), true);
+								}
+							}
 						}
 					}
 				}
@@ -357,12 +391,18 @@ namespace Stand
 			{
 #if true
 				// Register with AddressGamers
-				AddressGamers::onDiscoveredGamer(ip, *ap.getGamerInfo());
+				if (auto* gamer_info = ap.getGamerInfoNoFallback())
+				{
+					AddressGamers::onDiscoveredGamer(ip, *gamer_info);
+				}
 #else
 				// Register with AddressGamers if it's possible ComponentNetcode didn't have a chance to
 				if (!g_gui.players_discovered)
 				{
-					AddressGamers::onDiscoveredGamer(ip, *ap.getGamerInfo());
+					if (auto* gamer_info = ap.getGamerInfoNoFallback())
+					{
+						AddressGamers::onDiscoveredGamer(ip, *gamer_info);
+					}
 				}
 #endif
 			}
@@ -695,14 +735,9 @@ namespace Stand
 		if (!isSelf())
 		{
 			is_friend = pointers::g_rlPc->player_manager->IsFriend(rid);
-			if (auto cngp = getPlayer().getCNetGamePlayer())
-			{
-				if (auto my_cngp = g_player.getCNetGamePlayer())
-				{
-					const auto clan_id = cngp->clan_membership.clan.id;
-					is_crew_member = (clan_id != 0 && my_cngp->clan_membership.clan.id == cngp->clan_membership.clan.id);
-				}
-			}
+			// Remote CNetGamePlayer fields after player_info still use a legacy baked layout.
+			// Reading clan_membership here during player discovery/join can touch stale offsets on 1.73.
+			is_crew_member = false;
 		}
 	}
 
@@ -711,7 +746,34 @@ namespace Stand
 
 	void CommandPlayer::doWork(ThreadContext thread_context)
 	{
-		AbstractPlayer p(((const PlayerProviderSingle*)this->pp)->p);
+		const auto player_index = ((const PlayerProviderSingle*)this->pp)->p;
+		AbstractPlayer p(player_index);
+		const auto now = get_current_time_millis();
+		const bool first_periodic_work = last_periodic_work_at == 0;
+		if (ColoadMgr::coloading_with_cherax
+			&& !force_flag_update
+			&& !first_periodic_work
+			&& now - last_periodic_work_at < 200)
+		{
+			return;
+		}
+		last_periodic_work_at = now;
+		if (ColoadMgr::coloading_with_cherax && first_periodic_work)
+		{
+			// Players are normally discovered in one burst. Spread their next expensive update
+			// across the interval instead of hitching on every fifth frame as a single batch.
+			last_periodic_work_at += static_cast<time_t>(player_index) * 7;
+		}
+		if (!isSelf() && commandPlayerRepresentsSelf(p, ((const PlayerProviderSingle*)this->pp)->p))
+		{
+			flags |= 1 << FLAG_SELF;
+			did_rid_spoof_lookup = true;
+			removeDetection(FlowEvent::MOD_PRESENCESPOOFING);
+			removeDetection(FlowEvent::MOD_HOSTKN_AGGRESSIVE);
+			removeDetection(FlowEvent::MOD_HOSTKN_SWEET);
+			removeDetection(FlowEvent::MOD_HOSTKN_HANDICAP);
+			removeDetection(FlowEvent::MOD_SPFDHOSTKN);
+		}
 		updateCachedVars();
 		AbstractEntity ped = p.getPed();
 		// Flags
@@ -1148,20 +1210,70 @@ namespace Stand
 					// Spoofed RP
 					int rank = p.getRank();
 					int rp = p.getRp();
-					if (rank < 0 || rank > 8000 || rp < 0 || rp > 1787576850)
+					const bool stats_sync_settled = GET_MILLIS_SINCE(discovery) > 30000;
+					bool rank_source_uncertain = false;
+					if (!isSelf() && ped.isValid())
 					{
-						// Invalid Rank/RP
-						getAndApplyReactions(p, FlowEvent::MOD_RP2);
+						if (auto* netobj = (CNetObjPlayer*)ped.getCPed()->m_net_object)
+						{
+							const auto cnop_rank = netobj->m_stats[PlayerCard::NETSTAT_RANK];
+							if (cnop_rank != 0 && static_cast<int>(cnop_rank) != rank)
+							{
+								rank_source_uncertain = true;
+							}
+						}
 					}
-					if (rp < Util::get_rp_required_for_rank(rank)
-						|| (
-							rp > Util::get_rp_required_for_rank(rank + 1)
-							&& rank != 8000
-							)
-						)
+
+					const bool invalid_rank_rp = rank < 0 || rank > 8000 || rp < 0 || rp > 1787576850;
+					const bool rank_rp_mismatch = !invalid_rank_rp
+						&& (
+							rp < Util::get_rp_required_for_rank(rank)
+							|| (
+								rp > Util::get_rp_required_for_rank(rank + 1)
+								&& rank != 8000
+								)
+							);
+
+					if (!stats_sync_settled || rank_source_uncertain)
 					{
-						// RP-Rank Mismatch
-						getAndApplyReactions(p, FlowEvent::MOD_RP3);
+						invalid_rank_rp_since = 0;
+						rank_rp_mismatch_since = 0;
+					}
+					else
+					{
+						if (invalid_rank_rp)
+						{
+							if (invalid_rank_rp_since == 0)
+							{
+								invalid_rank_rp_since = get_current_time_millis();
+							}
+							else if (GET_MILLIS_SINCE(invalid_rank_rp_since) > 15000)
+							{
+								// Invalid Rank/RP
+								getAndApplyReactions(p, FlowEvent::MOD_RP2);
+							}
+						}
+						else
+						{
+							invalid_rank_rp_since = 0;
+						}
+
+						if (rank_rp_mismatch)
+						{
+							if (rank_rp_mismatch_since == 0)
+							{
+								rank_rp_mismatch_since = get_current_time_millis();
+							}
+							else if (GET_MILLIS_SINCE(rank_rp_mismatch_since) > 20000)
+							{
+								// RP-Rank Mismatch
+								getAndApplyReactions(p, FlowEvent::MOD_RP3);
+							}
+						}
+						else
+						{
+							rank_rp_mismatch_since = 0;
+						}
 					}
 					if (!isSelf()
 						&& ped.isValid()
@@ -1289,25 +1401,8 @@ namespace Stand
 		{
 			if (hasStandUserHandshakeFinished())
 			{
-				if (const CNetGamePlayer* const cnetgameplayer = p.getCNetGamePlayer())
-				{
-					if (auto cheats_notified = (cnetgameplayer->m_cheatsNotified & ~(1 << 3)))
-					{
-						getAndApplyReactions(p, FlowEvent::MOD_RAC, fmt::to_string(soup::bitutil::getLeastSignificantSetBit(cheats_notified)), 50);
-					}
-					if (cnetgameplayer->IsRockstarDev())
-					{
-						getAndApplyReactions(p, FlowEvent::MOD_RSDEV);
-					}
-					if (cnetgameplayer->IsRockstarQA())
-					{
-						getAndApplyReactions(p, FlowEvent::MOD_RSQA);
-					}
-					if (cnetgameplayer->IsCheater())
-					{
-						getAndApplyReactions(p, FlowEvent::MOD_CHEAT);
-					}
-				}
+				// These remote fields also live past the stale 1.72 CNetGamePlayer layout and are
+				// exercised during joins. Skip them until the 1.73 offsets are rederived from dumps.
 			}
 
 			if (!syncing_as_visible)

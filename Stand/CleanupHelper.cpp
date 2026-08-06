@@ -27,9 +27,9 @@ namespace Stand
 
 			Input::scheme = InputSchemeNumpad();
 
-			if (SessionSpoofing::copy_from != nullptr)
+			if (SessionSpoofing::hasCopyFrom())
 			{
-				SessionSpoofing::copy_from = nullptr;
+				SessionSpoofing::clearCopyFrom();
 				SessionSpoofing::onDisable();
 			}
 

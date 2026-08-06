@@ -37,9 +37,9 @@ namespace Stand
 						}
 						else
 						{
-							start_pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
+							start_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 						}
-						const auto target_pos = CAM::GET_FINAL_RENDERED_CAM_COORD() + (CAM::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * WEAPON::GET_MAX_RANGE_OF_CURRENT_PED_WEAPON(g_player_ped));
+						const auto target_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD() + (CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * WEAPON::GET_MAX_RANGE_OF_CURRENT_PED_WEAPON(g_player_ped));
 						//GRAPHICS::DRAW_LINE(start_pos.x, start_pos.y, start_pos.z, target_pos.x, target_pos.y, target_pos.z, 255, 0, 255, 255);
 						MISC::SHOOT_SINGLE_BULLET_BETWEEN_COORDS_IGNORE_ENTITY(start_pos.x, start_pos.y, start_pos.z, target_pos.x, target_pos.y, target_pos.z, 250, true, weaponHash, g_player_ped, true, false, -1.0f, g_player_ped, 0);
 					}

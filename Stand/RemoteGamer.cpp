@@ -228,9 +228,9 @@ namespace Stand
 		{
 			g->considerRefresh(false);
 		}
-		if (SessionSpoofing::copy_from != nullptr)
+		if (auto* copy_from = SessionSpoofing::getCopyFrom())
 		{
-			SessionSpoofing::copy_from->considerRefresh(false);
+			copy_from->considerRefresh(false);
 		}
 	}
 
@@ -671,9 +671,10 @@ namespace Stand
 	bool RemoteGamer::canBeDeleted() noexcept
 	{
 		return hasResponse()
+			&& !isQueuedOrPending()
 			&& GET_MILLIS_SINCE(status_as_of) > 10 * 60 * 1000
 			&& !isTracked()
-			&& this != SessionSpoofing::copy_from
+			&& this->rid != SessionSpoofing::getCopyFromRid()
 			;
 	}
 }

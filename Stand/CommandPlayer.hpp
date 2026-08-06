@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CommandListPlayer.hpp"
 #include "CommandPlayerPong.hpp"
@@ -48,7 +48,7 @@ namespace Stand
 		std::string name; // filtered
 
 		// "joined" is a bit of a heuristic for when we should be fine to interact with this player, e.g. send SEs to them.
-		// There's also a global in freemode.c which is set to 99 when they're done joining. ">= 2 && CAM::IS_SCREEN_FADED_OUT())"
+		// There's also a global in freemode.c which is set to 99 when they're done joining. ">= 2 && CAMERA::IS_SCREEN_FADED_OUT())"
 		// Don't know how reliable such an approach is, tho.
 		bool joined;
 
@@ -67,16 +67,20 @@ namespace Stand
 		bool processed_rediscovery = false;
 #endif
 		bool force_recreate = false;
-		bool changed_info = false;
+		int64_t pending_identity_rid = 0;
+		time_t pending_identity_since = 0;
 		bool did_rid_spoof_lookup = false;
 		bool is_friend = false;
 		bool is_crew_member = false;
 		time_t last_attack = 0;
+		time_t last_periodic_work_at = 0;
 		playerflag_t flags = 0;
 		compactplayer_t spectating = MAX_PLAYERS;
 		time_t invulnerable_since = 0;
 		time_t latest_death_at = 0;
 		time_t latest_vehicle_entry_at = 0;
+		time_t invalid_rank_rp_since = 0;
+		time_t rank_rp_mismatch_since = 0;
 		time_t rank_incongruence_since = 0;
 		hash_t syncing_as_model = ATSTRINGHASH("mp_m_freemode_01");
 		time_t otr_deadline = 0;

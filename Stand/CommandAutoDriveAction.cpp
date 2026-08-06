@@ -332,7 +332,7 @@ namespace Stand
 				{
 					const auto speed = getCruiseSpeed();
 					TASK::SET_DRIVE_TASK_CRUISE_SPEED(g_player_ped, speed);
-					TASK::SET_DRIVE_TASK_MAX_CRUISE_SPEED(g_player_ped, speed);
+					TASK::SET_DRIVE_TASK_MAX_CRUISE_SPEED(g_player_ped, speed, TRUE);
 					last_speed_update = get_current_time_millis();
 				}
 

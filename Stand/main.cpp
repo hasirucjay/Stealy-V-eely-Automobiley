@@ -1869,7 +1869,7 @@ namespace Stand
 		});
 		BATCH_ADD_FUNC("L4", CPauseMenu_UpdateProfileFromMenuOptions, "48 89 5C 24 08", "48 89 74 24 10 57 48 83 EC 20 48 8B 1D ? ? ? ? 44 8B 05 ? ? ? ? 40 8A F2 40 8A F9 BA 02 00 00 00");
 
-		BATCH_ADD_OPTIONAL_HOOK("N0", rage_rlTelemetry_Export, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 18 48 89 78 20 41 56 48 83 EC 30 49 8B F0 4C 8D 40 EC");
+		BATCH_ADD_OPTIONAL_HOOK("N0", rage_rlTelemetry_Export, "48 89 5C 24 08", "48 89 6C 24 18 56 57 41 56 48 83 EC 20 4D 8B F1 49 8B D8 48 8B F2 48 8B F9 C6 02 00");
 #if HTTP_HOOK
 		BATCH_ADD("N1", "48 8D 6C 24 30 48 89 9D 30 04 00 00 48 89 B5 40 04 00 00", [](soup::Pointer p)
 		{
@@ -2051,7 +2051,7 @@ namespace Stand
 			pointers::rage_datBitBuffer_ReadBits = p.sub(5).as<rage_datBitBuffer_ReadBits_t>();
 		});
 		BATCH_ADD_FUNC("P3", rage_datBitBuffer_WriteBits, "48 89 5C 24 08", "57 48 83 EC 30 F6 41 1C 01 45 8B D1");
-		BATCH_ADD("P4", "4C 8B DC 49 89 5B 08 49 89 6B 10 49 89 73 18 57 41 56 41 57 48 83 EC 30 8A 82 C1 00 00 00 41 8B F1 49 8B E8", [](soup::Pointer p)
+		BATCH_ADD("P4", "4C 8B DC 49 89 5B 08 49 89 6B 10 49 89 73 18 57 41 56 41 57 48 83 EC 30 80 7A 61 FF 41 8B F1 49 8B E8", [](soup::Pointer p)
 		{
 			pointers::send_net_event_ack = p.as<send_net_event_ack_t>();
 		});
@@ -2090,10 +2090,10 @@ namespace Stand
 			script_vm_helper_init_1(pointers::script_vm_jump_table, &ScriptVmErrorHandling::onInvalidScriptOpCode);
 			script_vm_op_native_init(&pointers::script_vm_jump_table[Native]);
 		});
-		BATCH_ADD_OPTIONAL("PD", "4D 85 C0 74 06 2B FE 41 89 78 14 45 89 57 08 41 8B C2 EB", [](soup::Pointer p)
+		BATCH_ADD_OPTIONAL("PD", "45 89 57 08 41 8B C2 EB", [](soup::Pointer p)
 		{
-			script_vm_helper_init_2(&ScriptVmErrorHandling::onScriptThreadError, p.add(19).ripT<int8_t>().as<void*>());
-			pointers::script_thread_error_kill_1 = p.add(11).as<void*>();
+			script_vm_helper_init_2(&ScriptVmErrorHandling::onScriptThreadError, p.add(7).ripT<int8_t>().as<void*>());
+			pointers::script_thread_error_kill_1 = p.as<void*>();
 		});
 		BATCH_ADD_OPTIONAL("PE", "B8 02 00 00 00 41 89 47 08 48 81 C4 B8 00 00 00", [](soup::Pointer p)
 		{
@@ -2106,7 +2106,7 @@ namespace Stand
 		BATCH_ADD_OPTIONAL_HOOK("PJ", received_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 4C 8B EA");
 		BATCH_ADD_OPTIONAL_HOOK("PK", clone_pack, "48 89 5c 24", "48 89 6c 24 ? 48 89 74 24 ? 57 48 83 ec ? 48 8b f9 48 8b ca 49 8b e9");
 		//BATCH_ADD_OPTIONAL_HOOK("PL", send_clone_create, "4C 8B DC 49 89", "5B 08 49 89 6B 18 49 89 73 20 57 41 54 41 55 41 56 41 57 48 83 EC 50 48 8B 02 4D 8B F8");
-		BATCH_ADD_OPTIONAL_HOOK("PM", send_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 0F B6 B2");
+		BATCH_ADD_OPTIONAL_HOOK("PM", send_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 0F B6 ? ? 4D 8B E1 4D 8B F8 4C 8B EA 4C 8B F1 48 69 F6 C8 03 00 00");
 		//BATCH_ADD_OPTIONAL_HOOK("PN", send_clone_remove, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 30 41 80 78 ? FF 41 8A E9 49 8B F8 48 8B DA 48 8B F1 74");
 		BATCH_ADD_OPTIONAL_HOOK("PO", rage_netSyncTree_Read, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 20 44 89 40 18 57 48 83 EC 30 44 8B 05");
 		BATCH_ADD("PP", "49 8B CE FF 90 A0 00 00 00 84 C0 74 31 33 FF", [](soup::Pointer p)
@@ -2221,7 +2221,7 @@ namespace Stand
 		});
 #endif
 		// QH is used by ComponentSpoofPos
-		BATCH_ADD("QI", "74 0B 41 BF 18 00 00 00", [](soup::Pointer p)
+		BATCH_ADD("QI", "74 08 41 BF 18 00 00 00", [](soup::Pointer p)
 		{
 			pointers::custombjmsg_nop2bytes = p.as<uint8_t*>();
 			pointers::custombjmsg_responsecode = p.add(4).as<int32_t*>();
@@ -2434,8 +2434,9 @@ namespace Stand
 			CHECK_EXISTING_HOOK("S0", "48 89 5C 24 08");
 			STORE_HOOK(send_net_info_to_lobby_wrap);
 		});
-		BATCH_ADD_OPTIONAL("S3", "48 8B 81 48 01 00 00 48 83 C0 20 C3", [](soup::Pointer p)
+		BATCH_ADD_OPTIONAL("S3", "48 8B 81 ? ? ? ? 48 83 C0 20 C3", [](soup::Pointer p)
 		{
+			CNetGamePlayer::setPlayerInfoOffset(*p.add(3).as<int32_t*>());
 			STORE_HOOK(CNetGamePlayer_GetGamerInfo);
 		});
 		BATCH_ADD("S4", "84 C0 74 23 8B CB E8 ? ? ? ? 48 83 38 00", [](soup::Pointer p)
@@ -2659,6 +2660,7 @@ namespace Stand
 				message.append(soup::ObfusString(" with ").str());
 				if (!existing_hooks.empty())
 				{
+					ColoadMgr::classifyExistingHooks(existing_hooks);
 					message.append(soup::ObfusString("existing hooks (").str()).append(existing_hooks).push_back(')');
 					existing_hooks.clear();
 					if (!batch.allowed_fails.empty())

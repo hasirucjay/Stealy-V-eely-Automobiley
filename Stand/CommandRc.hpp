@@ -119,7 +119,7 @@ namespace Stand
 						{
 							Vector3 closestVehicleNodeCoords; 
 							float roadHeading; 
-							PATHFIND::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, &closestVehicleNodeCoords, &roadHeading, 1, 3, 0);
+							PATH::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, &closestVehicleNodeCoords, &roadHeading, 1, 3, 0);
 							ENTITY::SET_ENTITY_HEADING(veh, roadHeading);
 							ENTITY::SET_ENTITY_COORDS(veh, closestVehicleNodeCoords.x, closestVehicleNodeCoords.y, closestVehicleNodeCoords.z, 1, 0, 0, 1);
 
@@ -136,7 +136,7 @@ namespace Stand
 						Camgr::lock_focus(pos);
 						if (!g_player_veh.isValid())
 						{
-							CAM::SET_IN_VEHICLE_CAM_STATE_THIS_UPDATE(veh, 0);
+							CAMERA::SET_IN_VEHICLE_CAM_STATE_THIS_UPDATE(veh, 0);
 							HUD::LOCK_MINIMAP_POSITION(pos.x, pos.y);
 						}
 

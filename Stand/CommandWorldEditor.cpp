@@ -99,7 +99,7 @@ namespace Stand
 					spawned_focus = nullptr;
 					if (g_gui.opened && !g_commandbox.active)
 					{
-						auto r = soup::Ray::withRot(CAM::GET_FINAL_RENDERED_CAM_COORD(), CAM::GET_FINAL_RENDERED_CAM_ROT(2), 10000.0f);
+						auto r = soup::Ray::withRot(CAMERA::GET_FINAL_RENDERED_CAM_COORD(), CAMERA::GET_FINAL_RENDERED_CAM_ROT(2), 10000.0f);
 						float best_dist = FLT_MAX;
 						soup::Vector3 best_hit;
 						for (auto i = children.begin() + spawned_offset; i != children.end(); ++i)

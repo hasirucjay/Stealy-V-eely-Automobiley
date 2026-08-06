@@ -15,7 +15,7 @@ namespace Stand
 		}
 		if (!OBJECT::IS_DOOR_REGISTERED_WITH_SYSTEM(doorHash))
 		{
-			OBJECT::ADD_DOOR_TO_SYSTEM(doorHash, modelHash, x, y, z, FALSE, FALSE, TRUE);
+			OBJECT::ADD_DOOR_TO_SYSTEM(doorHash, modelHash, x, y, z, FALSE, FALSE, TRUE, 0);
 		}
 		OBJECT::DOOR_SYSTEM_SET_DOOR_STATE(doorHash, 0, FALSE, FALSE);
 	}

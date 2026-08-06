@@ -147,7 +147,7 @@ namespace Stand
 
 		void __fastcall rage_netArrayHandlerBase_WriteUpdate(rage::netArrayHandlerBase* _this, const rage::netPlayer* player, rage::datBitBuffer* bitBuffer, uint16_t updateSeq, unsigned int* currentElement, bool logSizes);
 
-		bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, const char* name, uint64_t metricTime, rage::rlMetric* metric);
+		bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, bool* failed, void* unk_r8, void* unk_r9, rage::rlMetric* metric);
 #if HTTP_HOOK
 		char __fastcall rage_netHttpRequest_Update(rage::netHttpRequest* a1);
 #endif

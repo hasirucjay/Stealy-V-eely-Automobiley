@@ -122,7 +122,7 @@ namespace Stand
 			&& g_renderer.gameplayState == PLAYING // not doesGameplayStateAllowMenuCommandInput to avoid issues with interaction menu
 			&& !(g_gui.isInMenuNavigationContext() && Input::doesSchemeConflictWithInput(INPUT_PHONE))
 			&& CommandToggleRegularSp::checkPermissions()
-			&& (CAM::IS_GAMEPLAY_CAM_RENDERING() || g_tb_freecam.isEnabled()) // Prevent dedsec from interrupting store menu navigation (LSC, clothes, likely others).
+			&& (CAMERA::IS_GAMEPLAY_CAM_RENDERING() || g_tb_freecam.isEnabled()) // Prevent dedsec from interrupting store menu navigation (LSC, clothes, likely others).
 			)
 		{
 			if (dedsec_selected_target.isValid() && !dedsec_selected_target.exists())
@@ -423,7 +423,7 @@ namespace Stand
 				if (!aimbot_captured_rot)
 				{
 					aimbot_captured_rot = true;
-					aimbot_rot = CAM::GET_GAMEPLAY_CAM_ROT(0);
+					aimbot_rot = CAMERA::GET_GAMEPLAY_CAM_ROT(0);
 					Camgr::lock_rot(aimbot_rot);
 				}
 
@@ -432,10 +432,10 @@ namespace Stand
 					aimbot_last_attack = get_current_time_millis();
 				}
 
-				v3 cur_rot = CAM::GET_GAMEPLAY_CAM_ROT(0);
+				v3 cur_rot = CAMERA::GET_GAMEPLAY_CAM_ROT(0);
 				if (aimbot_rot != cur_rot)
 				{
-					Camgr::lock_rot(CAM::GET_FINAL_RENDERED_CAM_ROT(0) + (cur_rot - aimbot_rot));
+					Camgr::lock_rot(CAMERA::GET_FINAL_RENDERED_CAM_ROT(0) + (cur_rot - aimbot_rot));
 
 					// heuristic to determine if user moved the cam
 					if (cur_rot.distance(aimbot_rot) > (GET_MILLIS_SINCE(aimbot_last_attack) > 1000 ? 0.02f : 1.f))
@@ -454,7 +454,7 @@ namespace Stand
 					&& aimbot_target.isValid()
 					)
 				{
-					const Vector3 cam_pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
+					const Vector3 cam_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 					v3 head_pos = aimbot_target.isPed() ? aimbot_target.getBonePos(aimbot_ped_bone) : aimbot_target.getPos();
 
 					float tick_buffer = 1.0f;
@@ -469,7 +469,7 @@ namespace Stand
 					if (aimbot_lerping == 1.0f)
 					{
 						aimbot_lerping = 0.0f;
-						aimbot_lerp_from = soup::Quaternion::fromEulerXYZ(CAM::GET_FINAL_RENDERED_CAM_ROT(0));
+						aimbot_lerp_from = soup::Quaternion::fromEulerXYZ(CAMERA::GET_FINAL_RENDERED_CAM_ROT(0));
 						aimbot_lerp_to = soup::Quaternion::fromEulerXYZ(cam_pos.lookAt(head_pos));
 					}
 					else
@@ -495,7 +495,7 @@ namespace Stand
 					}
 				}
 
-				if (CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4) // first person
+				if (CAMERA::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAMERA::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4) // first person
 				{
 					NETWORK::SET_ENTITY_LOCALLY_INVISIBLE(g_player_ped);
 				}
@@ -585,7 +585,7 @@ namespace Stand
 						dedsec_tutorial_state = DEDSEC_TUTORIAL_STATE_DONE;
 					}
 				}
-				const Vector3 cam_rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+				const Vector3 cam_rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 				float cam_offset_x;
 				{
 				redo_x:
@@ -792,9 +792,9 @@ namespace Stand
 					dedsec_selected_target = dedsec_target;
 					/*if (!PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_LOOK_BEHIND))
 					{
-						CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(CAM::GET_GAMEPLAY_CAM_COORD().look_at_yaw(dedsec_target_pos) - ENTITY::GET_ENTITY_ROTATION(g_player_ped, 2).z);
+						CAMERA::SET_GAMEPLAY_CAM_RELATIVE_HEADING(CAMERA::GET_GAMEPLAY_CAM_COORD().look_at_yaw(dedsec_target_pos) - ENTITY::GET_ENTITY_ROTATION(g_player_ped, 2).z);
 					}*/
-					dedsec_selected_target_start_rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+					dedsec_selected_target_start_rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 				}
 				else if (dedsec_tutorial_state == DEDSEC_TUTORIAL_STATE_TARGET)
 				{

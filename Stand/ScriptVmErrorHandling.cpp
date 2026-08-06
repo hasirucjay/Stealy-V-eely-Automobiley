@@ -243,7 +243,7 @@ namespace Stand
 		{
 			Script::current()->yield();
 		}
-		ScriptGlobal(GLOBAL_MAINTRANSID).set<>(SYSTEM::START_NEW_SCRIPT_WITH_NAME_HASH(ATSTRINGHASH("maintransition"), 8032));
+		ScriptGlobal(GLOBAL_MAINTRANSID).set<>(BUILTIN::START_NEW_SCRIPT_WITH_NAME_HASH(ATSTRINGHASH("maintransition"), 8032));
 		SCRIPT::SET_SCRIPT_WITH_NAME_HASH_AS_NO_LONGER_NEEDED(ATSTRINGHASH("maintransition"));
 
 		// Manage trans state so maintrans goes to start fm asap

@@ -22,13 +22,16 @@ namespace Stand
 				auto* g = RemoteGamer::get(parent->as<CommandHistoricPlayer>()->player->rid, true, RGU_NONE);
 				if (g != nullptr)
 				{
-					if (SessionSpoofing::copy_from != nullptr)
+					if (SessionSpoofing::hasCopyFrom())
 					{
-						PlayerHistory::findRID(SessionSpoofing::copy_from->rid)->flags &= ~HP_COPY;
+						if (auto* prev = PlayerHistory::findRID(SessionSpoofing::getCopyFromRid()))
+						{
+							prev->flags &= ~HP_COPY;
+						}
 					}
 					parent->as<CommandHistoricPlayer>()->player->flags |= HP_COPY;
 					PlayerHistory::save();
-					SessionSpoofing::copy_from = g;
+					SessionSpoofing::setCopyFrom(g);
 					return;
 				}
 				else
@@ -48,7 +51,7 @@ namespace Stand
 	{
 		parent->as<CommandHistoricPlayer>()->player->flags &= ~HP_COPY;
 		PlayerHistory::save();
-		SessionSpoofing::copy_from = nullptr;
+		SessionSpoofing::clearCopyFrom();
 		SessionSpoofing::onDisable();
 	}
 

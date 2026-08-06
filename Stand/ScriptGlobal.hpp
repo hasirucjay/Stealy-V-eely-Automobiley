@@ -8,46 +8,46 @@ inline SOUP_TUNABLE(uint32_t, GLOBAL_UNK_GAME_STATE_XMAS) =									33776; // re
 
 // am_contact_requests
 
-inline SOUP_TUNABLE(uint32_t, GLOBAL_CONTACT_TIMEOUT) =										2686090 + 4356 + 257;
+inline SOUP_TUNABLE(uint32_t, GLOBAL_CONTACT_TIMEOUT) =										2686119 + 4372 + 257;
 inline SOUP_TUNABLE(uint32_t, GLOBAL_CONTACT_TIMEOUT_SIZE) =								2;
 inline SOUP_TUNABLE(uint32_t, GLOBAL_CONTACT_TIMEOUT_MECHANIC) =							7;
 
 // freemode
 
 #pragma region Broadcast Data
-#define GPBD_FM_2 1882572
-#define GPBD_Interactions 4514608
-#define GPBD_FM 1845250
-#define GPBD_MissionName 1873411
-#define GPBD_Kicking 1873924
-#define GPBD_SCTV 1927920
-#define GPBD_FM_HeistPlanning 1877158
-#define g_AMC_playerBD 2700170
-#define GPBD_FM_3 1892653
-#define GlobalplayerBD 2658291
-#define GPBD_FM_4 1912395
-#define GSBD 2649159
-#define GSBD_BlockB 2650423
-#define GSBD_BlockC 2652579
+#define GPBD_FM_2 1882652
+#define GPBD_Interactions 4514687
+#define GPBD_FM 1845298
+#define GPBD_MissionName 1873491
+#define GPBD_Kicking 1874004
+#define GPBD_SCTV 1928305
+#define GPBD_FM_HeistPlanning 1877238
+#define g_AMC_playerBD 2700281
+#define GPBD_FM_3 1892925
+#define GlobalplayerBD 2658293
+#define GPBD_FM_4 1912667
+#define GSBD 2649161
+#define GSBD_BlockB 2650425
+#define GSBD_BlockC 2652581
 #define GSBD_MissionsShared 2625811
-#define GSBD_MissionRequest 2655290
-#define GSBD_MissionList 2655947
-#define GSBD_ExclusionAreas 2656157
-#define GSBD_ActivitySelector 2656382
-#define GSBD_Betting 2657304
-#define GSBD_HoldUp 2657885
-#define GSBD_SyncedInteractions 4515281
-#define GSBD_FM 1835511
-#define GSBD_Kicking 1877125
-#define GSBD_HeistPlanning 1935536
-#define GSBD_PropertyInstances 1943442
-#define GSBD_FM_events 1922477
-#define GSBD_FM_events2 2658056
-#define GPBD_CasinoHeist 1976315
-#define GSBD_RandomEvents 1882120
-#define GPBD_HeistIsland 1980733
-#define GPBD_NetHeistPlanningGeneric 1979868
-#define GPBD_Flow 1983167
+#define GSBD_MissionRequest 2655292
+#define GSBD_MissionList 2655949
+#define GSBD_ExclusionAreas 2656159
+#define GSBD_ActivitySelector 2656384
+#define GSBD_Betting 2657306
+#define GSBD_HoldUp 2657887
+#define GSBD_SyncedInteractions 4515360
+#define GSBD_FM 1835555
+#define GSBD_Kicking 1877205
+#define GSBD_HeistPlanning 1935929
+#define GSBD_PropertyInstances 1943836
+#define GSBD_FM_events 1922845
+#define GSBD_FM_events2 2658058
+#define GPBD_CasinoHeist 1976846
+#define GSBD_RandomEvents 1882200
+#define GPBD_HeistIsland 1981269
+#define GPBD_NetHeistPlanningGeneric 1980404
+#define GPBD_Flow 1983730
 #pragma endregion Broadcast Data
 
 #define GlobalServerBD_FM GSBD_FM
@@ -55,13 +55,14 @@ inline SOUP_TUNABLE(uint32_t, GLOBAL_CONTACT_TIMEOUT_MECHANIC) =							7;
 inline SOUP_TUNABLE(uint32_t, GLOBAL_ATOMIZER_XMAS_TINT) =									104869;			// (joaat("component_raypistol_varmod_xmas18"), joaat("weapon_raypistol"), -1)
 inline SOUP_TUNABLE(uint32_t, GLOBAL_PRIVATE_SESSION_OFFSET) =								746; // NETWORK::NETWORK_SESSION_GET_PRIVATE_SLOTS() > 0
 #define GLOBAL_PRIVATE_SESSION																g_sTransitionSessionData + GLOBAL_PRIVATE_SESSION_OFFSET
-inline SOUP_TUNABLE(uint32_t, GLOBAL_TRANSITION_STATE) =									1575018;			// NETWORK::NETWORK_TRANSITION_ADD_STAGE(iVar2
-inline SOUP_TUNABLE(uint32_t, GLOBAL_DISABLE_DRIPFEED) =									2708544;
+inline SOUP_TUNABLE(uint32_t, GLOBAL_TRANSITION_STATE) =									1575022;			// NETWORK::NETWORK_TRANSITION_ADD_STAGE(iVar2
+inline SOUP_TUNABLE(uint32_t, GLOBAL_DISABLE_DRIPFEED) =									2708655;
+inline SOUP_TUNABLE(uint32_t, GLOBAL_TRANSITION_GAMEMODE) =								33816; // maintransition: NETWORK_SESSION_HOST / NETWORK_SESSION_SET_GAMEMODE
 
 #define GLOBAL_NEW_SESSION_UNK1 GLOBAL_UNK_GAME_STATE_XMAS
-inline SOUP_TUNABLE(uint32_t, GLOBAL_NEW_SESSION_UNK2) =									1574630;
-inline SOUP_TUNABLE(uint32_t, GLOBAL_NEW_SESSION_UNK3) =									1575037;
-inline SOUP_TUNABLE(uint32_t, GLOBAL_NEW_SESSION_SCTV) =									2698539;
+inline SOUP_TUNABLE(uint32_t, GLOBAL_NEW_SESSION_UNK2) =									1574937;
+inline SOUP_TUNABLE(uint32_t, GLOBAL_NEW_SESSION_UNK3) =									2697071;
+inline SOUP_TUNABLE(uint32_t, GLOBAL_NEW_SESSION_SCTV) =									2698647;
 
 inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_UNKBETTINGIDX) =							97 + 28;
 inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_CONTROL_TYPE) =							97 + 29;
@@ -86,6 +87,9 @@ inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_BUNKER_ID_SIZE) =							13;
 inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_BUNKER_ID_OFFSET) =						5;
 inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_FACILITY_ID) =								260 + 310; // 0 if none owned
 inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_NIGHTCLUB_ID) =							260 + 364; // CLUB_PAY_MAX
+inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_SIMPLE_INTERIOR_OWNER) =					260 + 409;
+inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_SIMPLE_INTERIOR_INDEX) =					260 + 410;
+inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_SIMPLE_INTERIOR_VARIANT) =				260 + 411;
 
 inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_VEHBITSET1) =								260 + 376;		// == 646)
 inline SOUP_TUNABLE(uint32_t, GLOBAL_PLAYER_STAT_VEHBITSET1_RCBANDITO) =					29;
@@ -226,7 +230,7 @@ inline SOUP_TUNABLE(uint32_t, GSBD_FM_IMPORTANT_ARRAY_OFFSET) =								410 + 4; 
 inline SOUP_TUNABLE(uint32_t, GLOBAL_INTERACT_SIZE) =										19;
 inline SOUP_TUNABLE(uint32_t, GLOBAL_INTERACT_iSceneId) =									3;
 
-inline SOUP_TUNABLE(uint32_t, GPBD_FM_4_SIZE) =												306;
+inline SOUP_TUNABLE(uint32_t, GPBD_FM_4_SIZE) =												318;
 inline SOUP_TUNABLE(uint32_t, GPBD_FM_4_PICKUP_REQUESTS) =									102 + 21; // = SCRIPT::GET_HASH_OF_THIS_SCRIPT_NAME();
 inline SOUP_TUNABLE(uint32_t, GPBD_FM_4_PICKUP_REQUESTS_SIZE) =								14;
 
@@ -244,92 +248,95 @@ inline SOUP_TUNABLE(uint32_t, GLOBAL_VEHICLE_EXPORT_COOLDOWN_OFFSET) =						51; 
 
 // am_mp_drone
 
-inline SOUP_TUNABLE(uint32_t, GLOBAL_NANO_DRONE) =											1964145; //  == 0f)
+inline SOUP_TUNABLE(uint32_t, GLOBAL_NANO_DRONE) =											1964670; //  == 0f)
 inline SOUP_TUNABLE(uint32_t, GLOBAL_NANO_DRONE_RANGE_LIMIT) =								11;
 
 #pragma region ScrUpdate
 // maintransition
 #define g_SpawnData 2635562
 #define g_SpawnData_bDontAskPermission g_SpawnData + 2998
-#define GLOBAL_MAINTRANSID 1677452
-#define g_TransitionSpawnData 2640098
+#define GLOBAL_MAINTRANSID 1677478
+#define g_TransitionSpawnData 2640100
 #define g_TransitionSpawnData_bIgnoreSpawnActivity g_TransitionSpawnData + 18
-#define g_sTransitionSessionData 2685150
+#define g_sTransitionSessionData 2685152
 #define g_sTransitionSessionData_bFmmcLauncherReady g_sTransitionSessionData + 851
 #define GLOBAL_NEW_SESSION 1574589
 #define GLOBAL_NEW_SESSION_QUIT_TO_SP GLOBAL_NEW_SESSION + 2
-#define GLOBAL_CURRENT_SESSION_TYPE 1575043
+#define GLOBAL_CURRENT_SESSION_TYPE 1575047
 #define GLOBAL_NEW_SESSION_TYPE GLOBAL_CURRENT_SESSION_TYPE - 1
 #define GLOBAL_TRANS_SWITCH_1 1574634
 #define GLOBAL_TRANS_SWITCH_2 18
 #define GLOBAL_TRANS_SWITCH GLOBAL_TRANS_SWITCH_1 + GLOBAL_TRANS_SWITCH_2
-#define GLOBAL_TRANS_CHECK_BYPASS_1 1574656
+#define GLOBAL_TRANS_CHECK_BYPASS_1 1574657
 #define GLOBAL_TRANS_CHECK_BYPASS_2 6
 #define GLOBAL_TRANS_CHECK_BYPASS GLOBAL_TRANS_CHECK_BYPASS_1 + GLOBAL_TRANS_CHECK_BYPASS_2
 #define GLOBAL_TRANS_FLAGS 2621446
-#define GLOBAL_MP_WORLD_STATE 2698693
+#define GLOBAL_MP_WORLD_STATE 2698801
 #define MPGlobalsAmbience_g_bDoorsInited MPGlobalsAmbience + 3696
 // am_launcher
-#define GLOBAL_AM_LAUNCHER_HOST_DATA 2699984
+#define GLOBAL_AM_LAUNCHER_HOST_DATA 2700095
 // am_vehicle_spawn
-#define GLOBAL_RECLAIM_DISABLED 1836700
+#define GLOBAL_RECLAIM_DISABLED 1836747
 // dialogue_handler
-#define GLOBAL_DIAL_TIME 24004
+#define GLOBAL_DIAL_TIME 24044
 // shop_controller
-#define GLOBAL_SP_DESPAWN_BYPASS 4520961
+#define GLOBAL_SP_DESPAWN_BYPASS 4520226
 // cellphone_controller
 #define GLOBAL_INPUT_PHONE 21577
-#define GLOBAL_DISABLE_PHONE 21593
+#define GLOBAL_DISABLE_PHONE 21632
 // pi_menu
-#define GLOBAL_SP_PI_OPEN 113851
+#define GLOBAL_SP_PI_OPEN 113908
 // ingamehud
-#define GLOBAL_LOADING_HINT 1576345
+#define GLOBAL_LOADING_HINT 1576350
 // social_controller
-#define GLOBAL_AC_BAIL 111601
+#define GLOBAL_AC_BAIL 111658
 // timershud
-#define GLOBAL_TIMERS 1679103
+#define GLOBAL_TIMERS 1679116
 #define GLOBAL_TIMERS_BI_OFFSET 1163
 // freemode
-#define GLOBAL_PLAYERREMOTE_BASE /* GPBD_FM_3 */ 1892653
+#define GLOBAL_PLAYERREMOTE_BASE /* GPBD_FM_3 */ 1892925
 #define GLOBAL_PLAYERREMOTE_SIZE 615
 #define GLOBAL_PLAYERREMOTE_BITSET1 1
 #define GLOBAL_PLAYERREMOTE_BITSET1_NOVOTEKICK1 0 // Static
 #define GLOBAL_PLAYERREMOTE_BITSET1_NOVOTEKICK2 7 // Static
 #define GLOBAL_PLAYERREMOTE_ORG 10 // Static
 #define GLOBAL_PLAYERREMOTE_SEVERIFY 517
-#define GLOBAL_NEW_INVITES 24046
-#define GLOBAL_CHAR_SLOT 1574927
-#define GLOBAL_VIP_COOLDOWNS 2710963
-#define GLOBAL_PASSIVE_KILL_COOLDOWN 1971755
-#define GLOBAL_MKII_COOLDOWN 2712160
-#define GLOBAL_VOTE_KICK_DATA_BASE 1873924
+#define GLOBAL_NEW_INVITES 24086
+#define GLOBAL_CHAR_SLOT 1574928
+#define GLOBAL_VIP_COOLDOWNS 2711075
+#define GLOBAL_PASSIVE_KILL_COOLDOWN 1972286
+#define GLOBAL_MKII_COOLDOWN 2712272
+#define GLOBAL_VOTE_KICK_DATA_BASE 1874004
 #define GLOBAL_VOTE_KICK_DATA_SIZE 100
-#define GLOBAL_VOTE_KICKED 1877125
+#define GLOBAL_VOTE_KICKED 1877205
 #define GLOBAL_VOTE_KICKED_DATA_SIZE 1
-#define GLOBAL_DISABLE_VEHICLE_FOCUS 1579265
+#define GLOBAL_DISABLE_VEHICLE_FOCUS 2698454
 #define GLOBAL_CLAN_DESCS 1575123
 #define GLOBAL_CLAN_DESCS_DATA_SIZE 35
-#define GLOBAL_GIVE_WEAPONS 1576473
-#define GLOBAL_BLIPS 2647282
+#define GLOBAL_GIVE_WEAPONS 1576478
+#define GLOBAL_BLIPS 2647284
 #define GLOBAL_FADEOUTDEADBLIP GLOBAL_BLIPS + 373
 #define GLOBAL_BLIPSTAGGERCOUNT GLOBAL_BLIPS + 1542
 #define GLOBAL_BIGMAP GLOBAL_BLIPS + 1593
-#define g_SimpleInteriorData 1950198
+#define g_SimpleInteriorData 1950702
+#define GLOBAL_SIMPLE_INTERIOR_OWNER g_SimpleInteriorData + 3892
+#define GLOBAL_SIMPLE_INTERIOR_SCRIPT_ACTIVE g_SimpleInteriorData + 4248
+#define GLOBAL_SIMPLE_INTERIOR_INDEX g_SimpleInteriorData + 4249
 #define GLOBAL_LEAVE_INTERIOR g_SimpleInteriorData + 3977
-#define GLOBAL_NEW_SESSION_UNK4 1575017
-#define GLOBAL_PLAYER_STAT_BASE /* GlobalplayerBD_FM */ 1845250
-#define GLOBAL_PLAYER_STAT_SIZE 880
-#define GlobalServerBD_FM_events 1922477
+#define GLOBAL_NEW_SESSION_UNK4 1575021
+#define GLOBAL_PLAYER_STAT_BASE /* GlobalplayerBD_FM */ 1845298
+#define GLOBAL_PLAYER_STAT_SIZE 881
+#define GlobalServerBD_FM_events 1922845
 #define GLOBAL_SEVERIFY GlobalServerBD_FM_events
-#define GLOBAL_PLAYERSTATUS2_BASE /* GlobalplayerBD */ 2658291
+#define GLOBAL_PLAYERSTATUS2_BASE /* GlobalplayerBD */ 2658293
 #define GLOBAL_PLAYERSTATUS2_SIZE 468
 #define GLOBAL_CEO_COLOURS_BASE GSBD + 818
-#define GLOBAL_PLAYERSTATUS1_BASE 1677542
+#define GLOBAL_PLAYERSTATUS1_BASE 1677555
 #define GLOBAL_IDLE_TIMER_1 1576370
 #define GLOBAL_IDLE_TIMER_2 GLOBAL_PLAYERSTATUS1_BASE + 1158
 #define GLOBAL_IDLE_TIMER_3 GLOBAL_PLAYERSTATUS1_BASE + 1174
-#define GLOBAL_IDLE_TIMER_4 2699662
-#define MPGlobalsAmbience 2733002
+#define GLOBAL_IDLE_TIMER_4 2699773
+#define MPGlobalsAmbience 2733190
 #define GLOBAL_PEGASUS_VEHICLE MPGlobalsAmbience + 307
 #define GLOBAL_AM_AMMO_DROP MPGlobalsAmbience + 538
 #define GLOBAL_AM_BOAT_TAXI MPGlobalsAmbience + 539
@@ -345,7 +352,7 @@ inline SOUP_TUNABLE(uint32_t, GLOBAL_NANO_DRONE_RANGE_LIMIT) =								11;
 #define GLOBAL_EWO_COOLDOWN MPGlobalsAmbience + 5846
 #define GLOBAL_DISABLE_DEATH_BARRIERS MPGlobalsAmbience + 5829
 #define GLOBAL_RC_PV_MODEL MPGlobalsAmbience + 5842
-#define MPGlobals 2673271
+#define MPGlobals 2673273
 #define GLOBAL_PLAYERS_JOINED_BITSET MPGlobals + 1
 #define GLOBAL_OTRDEADLINE1 MPGlobals + 58
 #define GLOBAL_OTRDEADLINE2 MPGlobals + 60
@@ -354,20 +361,20 @@ inline SOUP_TUNABLE(uint32_t, GLOBAL_NANO_DRONE_RANGE_LIMIT) =								11;
 #define GLOBAL_RESPAWN_DATA MPGlobals + 1762
 #define GLOBAL_FMBNR_BASE MPGlobals + 2591
 #define GLOBAL_BST MPGlobals + 3768
-#define GLOBAL_PVS 1583765
+#define GLOBAL_PVS 1583771
 #define GLOBAL_PVS_ELMSIZE 143
-#define g_MPRestrictedInteriorAccessData 1955751
+#define g_MPRestrictedInteriorAccessData 1956258
 #define g_MPRestrictedInteriorAccessData_iKickOutFromRestrictedInteriorBS g_MPRestrictedInteriorAccessData + 45
 #define GLOBAL_BLOCK_C_IMPORTANT_ARRAY GSBD_BlockC + 1485
 #define GlobalServerBD_BlockC_g_iAssignedCarMeetParkingSpots GSBD_BlockC + 2669
-#define GLOBAL_LBD_PLAYER_COUNT 1836465
+#define GLOBAL_LBD_PLAYER_COUNT 1836511
 // am_pi_menu
-#define GLOBAL_AM_PI_MENU_SUBMENU 2712074
-#define GLOBAL_AM_PI_MENU_OPTION_ENABLED 2712075
+#define GLOBAL_AM_PI_MENU_SUBMENU 2712186
+#define GLOBAL_AM_PI_MENU_OPTION_ENABLED 2712187
 // am_heli_taxi
 #define MPGlobalsAmbience_iRequestedHeliByPA MPGlobalsAmbience + 547
 // am_mp_drone
-#define GLOBAL_NANO_DRONE_NET_TIMER 1964107
+#define GLOBAL_NANO_DRONE_NET_TIMER 1964632
 #pragma endregion ScrUpdate
 
 #define GLOBAL_TUNABLE_BASE 262145

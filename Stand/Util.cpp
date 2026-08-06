@@ -642,7 +642,7 @@ namespace Stand
 
 	AbstractEntity Util::createObject(const Hash model, const v3& pos, const bool networked)
 	{
-		const Object obj = OBJECT::CREATE_OBJECT_NO_OFFSET(model, pos.x, pos.y, pos.z, networked, networked, true);
+		const Object obj = OBJECT::CREATE_OBJECT_NO_OFFSET(model, pos.x, pos.y, pos.z, networked, networked, true, 0);
 		SOUP_IF_UNLIKELY (obj == 0)
 		{
 			return AbstractEntity::invalid();

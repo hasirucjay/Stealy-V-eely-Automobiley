@@ -1,4 +1,4 @@
-﻿#include "Renderer.hpp"
+#include "Renderer.hpp"
 
 #include <memory>
 
@@ -300,37 +300,37 @@ namespace Stand
 		switch (Lang::active_id)
 		{
 		case LANG_DE:
-			return m_font_user->ContainsCharacter(L'Ö');
+			return m_font_user->ContainsCharacter(L'�');
 
 		case LANG_PT:
-			return m_font_user->ContainsCharacter(L'ã');
+			return m_font_user->ContainsCharacter(L'�');
 
 		case LANG_LT:
-			return m_font_user->ContainsCharacter(L'š');
+			return m_font_user->ContainsCharacter(L'�');
 
 		case LANG_ZH:
-			return m_font_user->ContainsCharacter(L'文');
+			return m_font_user->ContainsCharacter(L'?');
 
 		case LANG_KO:
-			return m_font_user->ContainsCharacter(L'한');
+			return m_font_user->ContainsCharacter(L'?');
 
 		case LANG_RU:
-			return m_font_user->ContainsCharacter(L'й');
+			return m_font_user->ContainsCharacter(L'?');
 
 		case LANG_FR:
-			return m_font_user->ContainsCharacter(L'ç');
+			return m_font_user->ContainsCharacter(L'�');
 
 		case LANG_PL:
-			return m_font_user->ContainsCharacter(L'Ś');
+			return m_font_user->ContainsCharacter(L'S');
 
 		case LANG_IT:
-			return m_font_user->ContainsCharacter(L'ò');
+			return m_font_user->ContainsCharacter(L'�');
 
 		case LANG_JA:
-			return m_font_user->ContainsCharacter(L'両');
+			return m_font_user->ContainsCharacter(L'?');
 			
 		case LANG_VI:
-			return m_font_user->ContainsCharacter(L'ả');
+			return m_font_user->ContainsCharacter(L'?');
 		}
 		return true;
 	}
@@ -1585,11 +1585,11 @@ namespace Stand
 			{
 				continue;
 			}
-			if (c == L'「')
+			if (c == L'?')
 			{
 				c = L'[';
 			}
-			else if (c == L'」')
+			else if (c == L'?')
 			{
 				c = L']';
 			}
@@ -2341,8 +2341,8 @@ namespace Stand
 		const rage::Vector2 screen_pos = pos.getScreenPos();
 		if (screen_pos.isInBounds())
 		{
-			scale *= (1.0f / pos.distance(CAM::GET_FINAL_RENDERED_CAM_COORD())) * 2.0f;
-			scale *= (1.0f / CAM::GET_FINAL_RENDERED_CAM_FOV()) * 100.0f;
+			scale *= (1.0f / pos.distance(CAMERA::GET_FINAL_RENDERED_CAM_COORD())) * 2.0f;
+			scale *= (1.0f / CAMERA::GET_FINAL_RENDERED_CAM_FOV()) * 100.0f;
 			drawTextThisTickCP(screen_pos.x, screen_pos.y, std::move(text), ALIGN_CENTRE, scale * resolution_text_scale, colour, m_font_user, false);
 		}
 	}

@@ -14,22 +14,27 @@ namespace Stand
 
 	void CommandHistoryCopy::onClick(Click& click)
 	{
-		if (SessionSpoofing::copy_from != nullptr)
+		if (SessionSpoofing::hasCopyFrom())
 		{
-			PlayerHistory::findCommand(PlayerHistory::findRID(SessionSpoofing::copy_from->rid))->redirectOpen(click, this);
+			if (auto* hp = PlayerHistory::findRID(SessionSpoofing::getCopyFromRid()))
+			{
+				PlayerHistory::findCommand(hp)->redirectOpen(click, this);
+			}
 		}
 	}
 
 	void CommandHistoryCopy::onTickInGameViewport()
 	{
-		if (SessionSpoofing::copy_from != nullptr)
+		if (SessionSpoofing::hasCopyFrom())
 		{
-			setValue(PlayerHistory::findRID(SessionSpoofing::copy_from->rid)->name);
+			if (auto* hp = PlayerHistory::findRID(SessionSpoofing::getCopyFromRid()))
+			{
+				setValue(hp->name);
+				return;
+			}
+			SessionSpoofing::clearCopyFrom();
 		}
-		else
-		{
-			setValue(LANG_GET_W("NA"));
-		}
+		setValue(LANG_GET_W("NA"));
 	}
 
 	void CommandHistoryCopy::onTickInWebViewport()

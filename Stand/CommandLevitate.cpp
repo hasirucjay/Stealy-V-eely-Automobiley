@@ -40,7 +40,7 @@ namespace Stand
 
 	bool CommandLevitate::isFirstPerson() noexcept
 	{
-		return CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4;
+		return CAMERA::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAMERA::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4;
 	}
 
 	void CommandLevitate::onEnable(Click& click)
@@ -146,7 +146,7 @@ namespace Stand
 					}
 					else
 					{
-						rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+						rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 					}
 					rot.y = 0.0f;
 					if (PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_LOOK_BEHIND))

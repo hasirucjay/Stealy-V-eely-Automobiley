@@ -7,7 +7,7 @@
 namespace Stand
 {
 	Vector2Plus::Vector2Plus(float x, float y)
-		: x(x), y(y), z(PATHFIND::GET_APPROX_HEIGHT_FOR_POINT(x, y)), z_is_guessed(true)
+		: x(x), y(y), z(PATH::GET_APPROX_HEIGHT_FOR_POINT(x, y)), z_is_guessed(true)
 	{
 	}
 
@@ -66,7 +66,7 @@ namespace Stand
 
 	void Vector2Plus::guessZ()
 	{
-		z = PATHFIND::GET_APPROX_HEIGHT_FOR_POINT(x, y);
+		z = PATH::GET_APPROX_HEIGHT_FOR_POINT(x, y);
 		z_is_guessed = true;
 	}
 

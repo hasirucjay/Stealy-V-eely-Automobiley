@@ -1,10 +1,23 @@
 #include "CNetworkSession.hpp"
 
+#include <cstddef>
+
 #include "netEndpoint.hpp"
 #include "pointers.hpp"
 #include "SessionType.hpp"
 
 using namespace Stand;
+
+namespace
+{
+	// The baked struct layout still carries an older offset for this array, so write it through byte arithmetic instead of the stale field to avoid corrupting adjacent CNetworkSession state.
+	constexpr ptrdiff_t CNETWORKSESSION_MATCHMAKING_GROUP_MAX_OFFSET = 0x1E8AC;
+
+	int* getMatchmakingGroupMaxPtr(CNetworkSession* session) noexcept
+	{
+		return reinterpret_cast<int*>(reinterpret_cast<std::byte*>(session) + CNETWORKSESSION_MATCHMAKING_GROUP_MAX_OFFSET);
+	}
+}
 
 namespace rage
 {
@@ -86,16 +99,18 @@ void CNetworkSession::setSlots(Stand::SessionType type) noexcept
 
 void CNetworkSession::setMatchmakingGroupSlots(Stand::SessionType type) noexcept
 {
+	int* const matchmaking_group_max = getMatchmakingGroupMaxPtr(this);
+
 	switch (type)
 	{
 	case SOLO:
-		m_MatchmakingGroupMax[0] = 1;
-		m_MatchmakingGroupMax[4] = 1;
+		matchmaking_group_max[0] = 1;
+		matchmaking_group_max[4] = 1;
 		break;
 
 	default:
-		m_MatchmakingGroupMax[0] = (MAX_PLAYERS - NUM_SPECTATOR_SLOTS);
-		m_MatchmakingGroupMax[4] = NUM_SPECTATOR_SLOTS;
+		matchmaking_group_max[0] = (MAX_PLAYERS - NUM_SPECTATOR_SLOTS);
+		matchmaking_group_max[4] = NUM_SPECTATOR_SLOTS;
 		break;
 	}
 }

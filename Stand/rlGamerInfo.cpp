@@ -97,6 +97,11 @@ namespace rage
 			res.emplace_back(FlowEvent::MOD_ADMINRID);
 		}
 
+		if (is_self)
+		{
+			return res;
+		}
+
 		if (!is_self)
 		{
 			res.emplace_back(FlowEvent::MOD_PRESENCESPOOFING, 0);

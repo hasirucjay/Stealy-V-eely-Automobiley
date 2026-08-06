@@ -247,7 +247,7 @@ namespace Stand
 		}
 		if (show_rotation_cam)
 		{
-			drawInfoRotation(CAM::GET_FINAL_RENDERED_CAM_ROT(2));
+			drawInfoRotation(CAMERA::GET_FINAL_RENDERED_CAM_ROT(2));
 		}
 		if (show_peds)
 		{

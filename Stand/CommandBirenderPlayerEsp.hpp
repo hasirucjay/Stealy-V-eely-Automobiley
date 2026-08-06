@@ -34,7 +34,7 @@ namespace Stand
 		{
 			players.clear();
 
-			const auto cam_pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
+			const auto cam_pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 			const auto max_distance = (float)this->max_distance->value;
 			for (AbstractPlayer p : AbstractPlayer::listExcept(true))
 			{

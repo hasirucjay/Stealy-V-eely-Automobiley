@@ -1,4 +1,4 @@
-﻿#include "CommandLuaScript.hpp"
+#include "CommandLuaScript.hpp"
 
 #include <mutex> // lock_guard
 
@@ -7314,7 +7314,7 @@ f(link)
 		auto z_hint = lua_gettop(L) >= 3 ? (float)luaL_checknumber(L, 3) : 1000.0f;
 		if (z_hint == 1000.0f)
 		{
-			STREAMING::REQUEST_COLLISION_AT_COORD(x, y, PATHFIND::GET_APPROX_HEIGHT_FOR_POINT(x, y));
+			STREAMING::REQUEST_COLLISION_AT_COORD(x, y, PATH::GET_APPROX_HEIGHT_FOR_POINT(x, y));
 		}
 		else
 		{

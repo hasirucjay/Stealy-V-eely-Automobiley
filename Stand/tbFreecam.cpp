@@ -27,17 +27,17 @@ namespace Stand
 	{
 		if (g_player_veh.isValid())
 		{
-			auto cam_ctx = CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT();
-			if (CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(cam_ctx) == 4)
+			auto cam_ctx = CAMERA::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT();
+			if (CAMERA::GET_CAM_VIEW_MODE_FOR_CONTEXT(cam_ctx) == 4)
 			{
-				CAM::SET_CAM_VIEW_MODE_FOR_CONTEXT(cam_ctx, set_cam_to);
+				CAMERA::SET_CAM_VIEW_MODE_FOR_CONTEXT(cam_ctx, set_cam_to);
 			}
 		}
 	}
 
 	void tbFreecam::onEnable()
 	{
-		pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
+		pos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 		tbToggleableBehaviourScript::onEnable();
 	}
 
@@ -52,7 +52,7 @@ namespace Stand
 	{
 		ensureNotInVehicleFirstPerson(2);
 		unrestrictGameplayCam();
-		v3 rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
+		v3 rot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 		if (movement->m_on)
 		{
 			if (show_button_instructions->m_on)

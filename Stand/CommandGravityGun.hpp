@@ -50,7 +50,7 @@ namespace Stand
 					}
 					else if (Input::isCommandInputAllowed() && Input::isPressingAttack())
 					{
-						auto momentum = CAM::GET_FINAL_RENDERED_CAM_ROT(2).toDir();
+						auto momentum = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).toDir();
 						momentum *= 1000.0f;
 						momentum *= (float(force_multiplier->value) / 100.0f);
 						ENTITY::APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(target, 1, momentum.x, momentum.y, momentum.z, true, false, true, true);
@@ -68,7 +68,7 @@ namespace Stand
 							distance_from_self -= 1.0f;
 						}
 						auto pos = target.getPos();
-						auto desired_pos = (g_cam_ped.getPos() + (CAM::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * (distance_from_self + target.getDimensions().max())));
+						auto desired_pos = (g_cam_ped.getPos() + (CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).toDir() * (distance_from_self + target.getDimensions().max())));
 						auto momentum = pos.lookAt(desired_pos).toDir();
 						//float distance = pos.distanceSquared(desired_pos);
 						if (Input::isPressingAim())

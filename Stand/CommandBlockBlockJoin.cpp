@@ -1,8 +1,11 @@
 #include "CommandBlockBlockJoin.hpp"
 
+#include <algorithm>
+
 #include "AbstractPlayer.hpp"
 #include "CNetworkSession.hpp"
 #include "get_current_time_millis.hpp"
+#include "is_session.hpp"
 #include "netComplaintMsg.hpp"
 #include "pointers.hpp"
 #include "rlGamerInfo.hpp"
@@ -16,6 +19,42 @@
 
 namespace Stand
 {
+	namespace
+	{
+		[[nodiscard]] bool trySendJoinComplaint(const rage::netPeerId target_peer_id) noexcept
+		{
+			if (!pointers::send_netComplaintMsg || !pointers::connection_mgr || !pointers::network_session)
+			{
+				return false;
+			}
+
+			auto con_mgr = *pointers::connection_mgr;
+			auto network_session = *pointers::network_session;
+			if (!con_mgr || !network_session || !network_session->session)
+			{
+				return false;
+			}
+
+			auto host = AbstractPlayer::getHost();
+			if (!host.isValid())
+			{
+				return false;
+			}
+
+			auto endpoint = host.getEndpoint();
+			if (!endpoint)
+			{
+				return false;
+			}
+
+			rage::netComplaintMsg packet{};
+			packet.sender = g_player.getPeerId();
+			packet.targets[0] = target_peer_id;
+			packet.num_targets = 1;
+			return pointers::send_netComplaintMsg(con_mgr, endpoint->GetAddress(), network_session->session->channel_id, &packet, 0);
+		}
+	}
+
 	SessionPlayer::SessionPlayer(const rage::rlGamerInfo& info)
 		: discovery(get_current_time_millis()), rid(info.getHandle().rockstar_id), name(info.name), peerId(info.peer.id)
 	{
@@ -31,10 +70,41 @@ namespace Stand
 	{
 	}
 
+	void CommandBlockBlockJoin::enqueueUnique(std::vector<SessionPlayer>& players, const rage::rlGamerInfo& info)
+	{
+		const auto rid = info.getHandle().rockstar_id;
+		if (auto existing = std::find_if(players.begin(), players.end(), [rid](const SessionPlayer& player)
+		{
+			return player.rid == rid;
+		}); existing != players.end())
+		{
+			existing->name = info.name;
+			existing->peerId = info.peer.id;
+			return;
+		}
+		players.emplace_back(info);
+	}
+
+	void CommandBlockBlockJoin::clearPendingState() noexcept
+	{
+		session_players.clear();
+		pending_object_ids.clear();
+		pending_script_join_acks.clear();
+		resend_script_join = false;
+	}
+
+	static void eraseTrackedPlayerByRid(std::vector<SessionPlayer>& players, int64_t rid)
+	{
+		players.erase(std::remove_if(players.begin(), players.end(), [rid](const SessionPlayer& player)
+		{
+			return player.rid == rid;
+		}), players.end());
+	}
+
 	static void processPlayers(uint8_t detection_id, std::vector<SessionPlayer>& players, bool(*is_established)(SessionPlayer&))
 	{
 		std::unordered_set<int64_t> blockers{};
-		std::vector<SessionPlayer*> to_remove{};
+		std::vector<SessionPlayer> to_remove{};
 		for (auto i = players.begin(); i != players.end(); )
 		{
 #ifdef STAND_DEBUG
@@ -54,7 +124,7 @@ namespace Stand
 				blockers.emplace(i->rid);
 				if (GET_MILLIS_SINCE(i->discovery) > 15000)
 				{
-					to_remove.emplace_back(&*i);
+					to_remove.emplace_back(*i);
 				}
 			}
 			++i;
@@ -63,8 +133,8 @@ namespace Stand
 		{
 			for (const auto& sp : to_remove)
 			{
-				std::string name = sp->name;
-				name.append(" (").append(fmt::to_string(sp->rid)).push_back(')');
+				std::string name = sp.name;
+				name.append(" (").append(fmt::to_string(sp.rid)).push_back(')');
 				std::string msg = LANG_FMT("PTX_BJ_T2", std::move(name));
 				msg.append(" (");
 				msg.append(fmt::to_string(detection_id));
@@ -72,11 +142,7 @@ namespace Stand
 				Util::toast(std::move(msg), CommandBlockBlockJoin::toast_config.getToastFlags());
 				if (!g_player.isHost())
 				{
-					rage::netComplaintMsg packet;
-					packet.sender = g_player.getPeerId();
-					packet.targets[0] = sp->peerId;
-					packet.num_targets = 1;
-					pointers::send_netComplaintMsg(*pointers::connection_mgr, AbstractPlayer::getHost().getEndpoint()->GetAddress(), (*pointers::network_session)->session->channel_id, &packet, 0);
+					trySendJoinComplaint(sp.peerId);
 
 #if false
 					FiberPool::queueJob([]
@@ -108,7 +174,7 @@ namespace Stand
 				}
 				for (const auto& p : AbstractPlayer::listExcept(true))
 				{
-					if (p.getRockstarId() == sp->rid)
+					if (p.getRockstarId() == sp.rid)
 					{
 						if (g_player.isHost())
 						{
@@ -117,8 +183,11 @@ namespace Stand
 						else
 						{
 #if HAVE_BREAKUP_KICK
-							p.remoteDesync(rage::rlGamerHandle(sp->rid));
-							p.desyncBreakup();
+							if (is_session_started_and_transition_finished())
+							{
+								p.remoteDesync(rage::rlGamerHandle(sp.rid));
+								p.desyncBreakup();
+							}
 #else
 #endif
 						}
@@ -126,11 +195,14 @@ namespace Stand
 #if HAVE_BREAKUP_KICK
 					else if (p.isHost())
 					{
-						p.remoteDesync(rage::rlGamerHandle(sp->rid));
+						if (is_session_started_and_transition_finished())
+						{
+							p.remoteDesync(rage::rlGamerHandle(sp.rid));
+						}
 					}
 #endif
 				}
-				players.erase(std::find(players.begin(), players.end(), *sp));
+				eraseTrackedPlayerByRid(players, sp.rid);
 			}
 		}
 	}

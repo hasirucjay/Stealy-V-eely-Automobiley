@@ -33,9 +33,9 @@ namespace Stand
 				if (can_run && p.exists())
 				{
 					SpectateMgr::onTickSpectating(p.getPed());
-					CAM::SET_GAMEPLAY_CAM_FOLLOW_PED_THIS_UPDATE(g_cam_ped);
-					CAM::INVALIDATE_CINEMATIC_VEHICLE_IDLE_MODE();
-					CAM::INVALIDATE_IDLE_CAM();
+					CAMERA::SET_GAMEPLAY_CAM_FOLLOW_PED_THIS_UPDATE(g_cam_ped);
+					CAMERA::INVALIDATE_CINEMATIC_VEHICLE_IDLE_MODE();
+					CAMERA::INVALIDATE_IDLE_CAM();
 					auto pos = g_cam_ped.getPos();
 					Camgr::lock_focus(pos);
 					HUD::SET_MINIMAP_IN_SPECTATOR_MODE(TRUE, g_cam_ped);

@@ -26,12 +26,12 @@ namespace Stand
 		{
 			GtaThread::fromHash(ATSTRINGHASH("main_persistent"))->spoofAsOpt([]
 			{
-				const Vector3 pos = CAM::GET_GAMEPLAY_CAM_COORD();
-				const Vector3 rot = CAM::GET_GAMEPLAY_CAM_ROT(2);
-				custom_cam = CAM::CREATE_CAM_WITH_PARAMS("DEFAULT_SCRIPTED_CAMERA", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, CAM::GET_GAMEPLAY_CAM_FOV(), false, 2);
-				CAM::SET_CAM_ACTIVE(custom_cam, true);
-				CAM::SET_CAM_AFFECTS_AIMING(custom_cam, true);
-				CAM::RENDER_SCRIPT_CAMS(true, false, 0, false, false, false);
+				const Vector3 pos = CAMERA::GET_GAMEPLAY_CAM_COORD();
+				const Vector3 rot = CAMERA::GET_GAMEPLAY_CAM_ROT(2);
+				custom_cam = CAMERA::CREATE_CAM_WITH_PARAMS("DEFAULT_SCRIPTED_CAMERA", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, CAMERA::GET_GAMEPLAY_CAM_FOV(), false, 2);
+				CAMERA::SET_CAM_ACTIVE(custom_cam, true);
+				CAMERA::SET_CAM_AFFECTS_AIMING(custom_cam, true);
+				CAMERA::RENDER_SCRIPT_CAMS(true, false, 0, false, false, false);
 				disableCinematicCam();
 			});
 		}
@@ -43,10 +43,10 @@ namespace Stand
 		{
 			GtaThread::fromHash(ATSTRINGHASH("main_persistent"))->spoofAsOpt([]
 			{
-				CAM::RENDER_SCRIPT_CAMS(false, false, 0, false, false, false);
-				CAM::SET_CAM_ACTIVE(custom_cam, false);
+				CAMERA::RENDER_SCRIPT_CAMS(false, false, 0, false, false, false);
+				CAMERA::SET_CAM_ACTIVE(custom_cam, false);
 				enableCinematicCam();
-				CAM::DESTROY_CAM(custom_cam, false);
+				CAMERA::DESTROY_CAM(custom_cam, false);
 				custom_cam = 0;
 			});
 		}
@@ -86,12 +86,12 @@ namespace Stand
 	void Camgr::set_pos(const v3& pos)
 	{
 		const v3 cam_pos = pos - g_player_ent.getPos();
-		CAM::ATTACH_CAM_TO_ENTITY(custom_cam, g_player_ent, cam_pos.x, cam_pos.y, cam_pos.z, false);
+		CAMERA::ATTACH_CAM_TO_ENTITY(custom_cam, g_player_ent, cam_pos.x, cam_pos.y, cam_pos.z, false);
 	}
 
 	void Camgr::set_rot(const v3& rot)
 	{
-		CAM::SET_CAM_ROT(custom_cam, rot.x, rot.y, rot.z, 2);
+		CAMERA::SET_CAM_ROT(custom_cam, rot.x, rot.y, rot.z, 2);
 	}
 
 	void Camgr::set_rot(const soup::Quaternion& rot)
@@ -105,12 +105,12 @@ namespace Stand
 
 	void Camgr::set_fov(const float fov)
 	{
-		CAM::SET_CAM_FOV(custom_cam, fov);
+		CAMERA::SET_CAM_FOV(custom_cam, fov);
 	}
 
 	void Camgr::copy_pos_from_gameplay_cam()
 	{
-		const auto gameplay_cam_pos = v3(CAM::GET_GAMEPLAY_CAM_COORD());
+		const auto gameplay_cam_pos = v3(CAMERA::GET_GAMEPLAY_CAM_COORD());
 		if (distance_from_character_multiplier == 1.0f)
 		{
 			set_pos(gameplay_cam_pos);
@@ -124,12 +124,12 @@ namespace Stand
 
 	void Camgr::copy_rot_from_gameplay_cam()
 	{
-		set_rot(CAM::GET_GAMEPLAY_CAM_ROT(2));
+		set_rot(CAMERA::GET_GAMEPLAY_CAM_ROT(2));
 	}
 
 	void Camgr::copy_fov_from_gameplay_cam()
 	{
-		set_fov(CAM::GET_GAMEPLAY_CAM_FOV());
+		set_fov(CAMERA::GET_GAMEPLAY_CAM_FOV());
 	}
 
 	void Camgr::on_tick()
@@ -139,8 +139,8 @@ namespace Stand
 			if (cinematic_cam_disabled != 0)
 			{
 				PAD::DISABLE_CONTROL_ACTION(2, INPUT_VEH_CIN_CAM, true);
-				//CAM::SET_CINEMATIC_BUTTON_ACTIVE(false);
-				CAM::SET_CINEMATIC_MODE_ACTIVE(false);
+				//CAMERA::SET_CINEMATIC_BUTTON_ACTIVE(false);
+				CAMERA::SET_CINEMATIC_MODE_ACTIVE(false);
 			}
 			if (needsCustomCam())
 			{

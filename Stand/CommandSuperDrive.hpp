@@ -48,7 +48,7 @@ namespace Stand
 						Vector3 vec;
 						if (cam_toggle->m_on)
 						{
-							vec = CAM::GET_FINAL_RENDERED_CAM_ROT(2).toDir();
+							vec = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2).toDir();
 							vec /= 2.0f;
 						}
 						else

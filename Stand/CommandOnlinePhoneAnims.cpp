@@ -26,7 +26,7 @@ namespace Stand
 			}
 			if (is_session_started())
 			{
-				togglePhoneAnims(CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) != 4);
+				togglePhoneAnims(CAMERA::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAMERA::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) != 4);
 			}
 			return true;
 		});
@@ -42,10 +42,10 @@ namespace Stand
 			was_on = on;
 			if (SCRIPT::GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(ATSTRINGHASH("cellphone_flashhand")) != 0)
 			{
-				MOBILE::DESTROY_MOBILE_PHONE();
+				GTA::DESTROY_MOBILE_PHONE();
 				FiberPool::queueJob([]
 				{
-					MOBILE::CREATE_MOBILE_PHONE(0);
+					GTA::CREATE_MOBILE_PHONE(0);
 				});
 			}
 		}

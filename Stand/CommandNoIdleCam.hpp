@@ -18,8 +18,8 @@ namespace Stand
 		{
 			onChangeToggleScriptTickEventHandler(click, []
 			{
-				CAM::INVALIDATE_CINEMATIC_VEHICLE_IDLE_MODE();
-				CAM::INVALIDATE_IDLE_CAM();
+				CAMERA::INVALIDATE_CINEMATIC_VEHICLE_IDLE_MODE();
+				CAMERA::INVALIDATE_IDLE_CAM();
 			});
 		}
 	};

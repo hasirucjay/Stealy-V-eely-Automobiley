@@ -16,7 +16,7 @@ namespace Stand
 		{
 			onChangeToggleScriptTickEventHandler(click, []
 			{
-				CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(360.0f);
+				CAMERA::SET_GAMEPLAY_CAM_RELATIVE_HEADING(360.0f);
 			});
 		}
 	};

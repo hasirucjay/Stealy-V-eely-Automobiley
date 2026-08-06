@@ -39,12 +39,12 @@ namespace Stand
 				float text_scale = 1.0f;
 				if (veh.isValid())
 				{
-					if (CAM::GET_FOLLOW_VEHICLE_CAM_VIEW_MODE() != 4)
+					if (CAMERA::GET_FOLLOW_VEHICLE_CAM_VIEW_MODE() != 4)
 					{
 						text_scale = std::min(veh.getDimensions().y, 10.0f);
 					}
 				}
-				else if (CAM::IS_AIM_CAM_ACTIVE())
+				else if (CAMERA::IS_AIM_CAM_ACTIVE())
 				{
 					return true;
 				}
@@ -56,7 +56,7 @@ namespace Stand
 					{
 						textcanvas_scaleform.setText(Util::mps_to_unit_of_choice(g_player_ent.getSpeed()).c_str());
 						textcanvas_scaleform.setColour(Util::get_closest_hud_colour(colour->r->value, colour->g->value, colour->b->value, colour->a->value));
-						textcanvas_scaleform.draw3d(pos, CAM::GET_FINAL_RENDERED_CAM_ROT(2), text_scale * 2.2f);
+						textcanvas_scaleform.draw3d(pos, CAMERA::GET_FINAL_RENDERED_CAM_ROT(2), text_scale * 2.2f);
 					}
 				}
 				else

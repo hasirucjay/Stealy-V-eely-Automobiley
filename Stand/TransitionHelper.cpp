@@ -33,6 +33,22 @@
 
 namespace Stand
 {
+	static int getSafeTransitionGamemode(SessionType session_type) noexcept
+	{
+		switch (session_type)
+		{
+		case STAND_SCTV:
+		case STAND_NEW_PUBLIC_AS_SPECTATOR:
+			return 2;
+
+		default:
+			// maintransition drives normal online hosting with gamemode 1 and reserves 2 for spectator flow.
+			// 0 is treated like an unset/special value in several script paths, so using it here can leave
+			// NETWORK_SESSION_HOST reading transition state that was never fully initialised.
+			return 1;
+		}
+	}
+
 	time_t TransitionHelper::getTimeWastedOnTransitionState()
 	{
 		return get_current_time_millis() - ts_started;
@@ -74,8 +90,7 @@ namespace Stand
 				{
 					g_gui.updatePlayerCount();
 				}
-				CommandBlockBlockJoin::session_players.clear();
-				CommandBlockBlockJoin::pending_object_ids.clear();
+				CommandBlockBlockJoin::clearPendingState();
 			}
 			if (ts == TRANSITION_STATE_LOOK_TO_JOIN_ANOTHER_SESSION_FM)
 			{
@@ -192,6 +207,13 @@ namespace Stand
 		if (!isPrologueDone())
 		{
 			skipPrologue();
+		}
+
+		// maintransition reuses this low global when it calls NETWORK_SESSION_HOST.
+		// Reset it so we do not inherit a stale activity/job mode from a previous transition.
+		if (session_type != STAND_QUIT_TO_SP)
+		{
+			ScriptGlobal(GLOBAL_TRANSITION_GAMEMODE).set<int>(getSafeTransitionGamemode(session_type));
 		}
 
 		TranscendentVehicle::saveFromPlayerState();

@@ -240,14 +240,14 @@ public:
 	/* 0xAD04 */ uint32_t m_nHostFlags[::SessionType::ST_Max];
 	PAD(0xAD04 + 8, 0xB09C) uint32_t m_SessionState; // 48 8B D9 8B 89 ? ? ? ? 83 F9 08 7D (this sig broke in 1.71)
 	uint64_t unk_added_in_1_71;
-	PAD(0xB09C + 4, 0x1E854) int m_MatchmakingGroupMax[5]; // CNetworkSession::SetMatchmakingGroupMax - 83 FA FF 74 15 48 63 C2 // 0 = regular joiner, 4 = spectator. signed ints but must not be negative?
-	PAD(0x1E854 + (4 * 5), 0x2E888) int host_queue_sort_algo; // 83 C9 FC 03 CF
-	PAD(0x2E888 + 4, 0x2E8B0) rage::netPeerComplainer complaint_mgr;
-	/* 0x2E8B0 + 0x1098 */ rage::netPeerComplainer transition_complainer;
+	PAD(0xB09C + 4, 0x1E8A4) int matchmaking_group_max[5]; // live 3788/3889 dumps
+	PAD(0x1E8A4 + (4 * 5), 0x2E8D8) int host_queue_sort_algo; // 83 C9 FC 03 CF
+	PAD(0x2E8D8 + 4, 0x2E900) rage::netPeerComplainer complaint_mgr;
+	/* 0x2E908 + 0x1098 */ rage::netPeerComplainer transition_complainer;
 	// bool m_bAllowComplaintsWhenEstablishing;
 	// CNetworkRecentPlayers m_RecentPlayers;
-	PAD(0x2E8B0 + (0x1098 * 2), 0x332E8) CBlacklistedGamers blacklist;
-	PAD(0x332E8 + sizeof(CBlacklistedGamers), 0x34F1C) uint32_t m_TransitionState; // 74 ? 83 F8 05 7D
+	PAD(0x2E900 + (0x1098 * 2), 0x33338) CBlacklistedGamers blacklist;
+	PAD(0x33338 + sizeof(CBlacklistedGamers), 0x34F6C) uint32_t m_TransitionState; // 74 ? 83 F8 05 7D
 #if false
 	unsigned m_TransitionStateTime;
 	rage::rlSessionInfo m_TransitionJoinSessionInfo;
@@ -286,5 +286,8 @@ public:
 	void setMatchmakingGroupSlots(Stand::SessionType type) noexcept;
 };
 static_assert(offsetof(CNetworkSession, m_SessionState) == 0xB09C);
-static_assert(offsetof(CNetworkSession, m_MatchmakingGroupMax) == 0x1E85C); // 1.71
-static_assert(offsetof(CNetworkSession, host_queue_sort_algo) == 0x2E890); // 1.71
+static_assert(offsetof(CNetworkSession, matchmaking_group_max) == 0x1E8AC); // live 3788/3889 dumps
+static_assert(offsetof(CNetworkSession, host_queue_sort_algo) == 0x2E8E0);
+static_assert(offsetof(CNetworkSession, complaint_mgr) == 0x2E908);
+static_assert(offsetof(CNetworkSession, blacklist) == 0x33340);
+static_assert(offsetof(CNetworkSession, m_TransitionState) == 0x34F74);

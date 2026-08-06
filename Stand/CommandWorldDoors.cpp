@@ -438,14 +438,14 @@ namespace Stand
 		g_player_ent.setPos(pos);
 
 		// Allow interior to load and force it in camera view
-		auto viewmode = CAM::GET_FOLLOW_PED_CAM_VIEW_MODE();
-		CAM::SET_FOLLOW_PED_CAM_VIEW_MODE(4);
+		auto viewmode = CAMERA::GET_FOLLOW_PED_CAM_VIEW_MODE();
+		CAMERA::SET_FOLLOW_PED_CAM_VIEW_MODE(4);
 		Script::current()->yield(500);
-		CAM::SET_FOLLOW_PED_CAM_VIEW_MODE(viewmode);
+		CAMERA::SET_FOLLOW_PED_CAM_VIEW_MODE(viewmode);
 		Script::current()->yield(500);
 
 		// Finish transition
-		CAM::DO_SCREEN_FADE_IN(500);
+		CAMERA::DO_SCREEN_FADE_IN(500);
 		postTpMove();
 		Script::current()->yield(1500);
 	}
@@ -594,8 +594,8 @@ namespace Stand
 
 	static void pre_tp()
 	{
-		CAM::DO_SCREEN_FADE_OUT(500);
-		while (!CAM::IS_SCREEN_FADED_OUT())
+		CAMERA::DO_SCREEN_FADE_OUT(500);
+		while (!CAMERA::IS_SCREEN_FADED_OUT())
 		{
 			PAD::DISABLE_ALL_CONTROL_ACTIONS(0);
 			Script::current()->yield();

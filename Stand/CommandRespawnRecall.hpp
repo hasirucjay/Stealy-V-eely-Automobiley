@@ -33,7 +33,7 @@ namespace Stand
 					else
 					{
 						if (!g_player_ped.isDead()
-							&& (CAM::IS_SCREEN_FADED_IN() || is_session_started())
+							&& (CAMERA::IS_SCREEN_FADED_IN() || is_session_started())
 							)
 						{
 							g_player_ped.setPos(pos);

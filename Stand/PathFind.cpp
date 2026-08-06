@@ -40,7 +40,7 @@ namespace Stand
 	{
 		Vector3 outPos;
 		float outHeading;
-		PATHFIND::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, &outPos, &outHeading, 1, 1.0f, 0);
+		PATH::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, &outPos, &outHeading, 1, 1.0f, 0);
 		while (outHeading > 360.0f)
 		{
 			outHeading -= 360.0f;
@@ -133,7 +133,7 @@ namespace Stand
 	{
 		Vector3 outPos;
 		float outHeading;
-		PATHFIND::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, &outPos, &outHeading, 1, 1.0f, 0);
+		PATH::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, &outPos, &outHeading, 1, 1.0f, 0);
 		auto id = PathNodeIdentity::get(outPos);
 		PathNode* node = getNode(id);
 		if (node == nullptr)
@@ -333,9 +333,9 @@ namespace Stand
 		int backup_node_index = model.isBoat() ? node_type : 1; // Backup node index is only relevant for land vehicles, as we prefer major routes.
 		do
 		{
-			if (!PATHFIND::GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, node_index, &result, &heading, &lane, node_type, 3.0f, 0.0f) || result.distance(pos) > max_range)
+			if (!PATH::GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, node_index, &result, &heading, &lane, node_type, 3.0f, 0.0f) || result.distance(pos) > max_range)
 			{
-				PATHFIND::GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, node_index, &result, &heading, &lane, backup_node_index, 3.0f, 0.0f); // If we can't find anything, then go with any viable path.
+				PATH::GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.x, pos.y, pos.z, node_index, &result, &heading, &lane, backup_node_index, 3.0f, 0.0f); // If we can't find anything, then go with any viable path.
 			}
 
 			if (++node_index == 255)
@@ -352,7 +352,7 @@ namespace Stand
 				&& !model.isAquatic()
 				)
 			{
-				PATHFIND::GET_ROAD_BOUNDARY_USING_HEADING(result.x, result.y, result.z, heading, &result);
+				PATH::GET_ROAD_BOUNDARY_USING_HEADING(result.x, result.y, result.z, heading, &result);
 			}
 
 			recent_natural_spawns.emplace_back(std::make_pair(result, get_current_time_millis()));

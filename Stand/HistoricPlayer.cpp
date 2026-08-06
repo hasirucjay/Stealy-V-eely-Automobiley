@@ -31,7 +31,7 @@ namespace Stand
 			}
 			if (flags & HP_COPY)
 			{
-				SessionSpoofing::copy_from = g;
+				SessionSpoofing::setCopyFrom(g);
 			}
 		}
 	}
