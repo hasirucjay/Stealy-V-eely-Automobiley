@@ -8,7 +8,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandPlayerCrashTask(CommandList* const parent)
-			: CommandPlayerCrash(parent, LIT("[Debug Build] The Buggles"), {}, NOLABEL, CMDFLAGS_ACTION | CMDFLAG_FEATURELIST_SKIP)
+			: CommandPlayerCrash(parent, LIT("The Buggles"), {}, NOLABEL, CMDFLAGS_ACTION | CMDFLAG_FEATURELIST_SKIP)
 		{
 		}
 

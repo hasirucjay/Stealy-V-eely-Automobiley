@@ -34,7 +34,7 @@
 #include "Whitelist.hpp"
 
 #define HAVE_SUPERJUMP_ANTI_DETECTION false
-#define HAVE_SEND_CLONE_CREATE_HOOK false
+#define HAVE_SEND_CLONE_CREATE_HOOK true
 #define HAVE_SEND_CLONE_SYNC_HOOK true
 
 #define FORCE_SEND_MESSAGES_BY_DEFAULT true
@@ -121,7 +121,7 @@ namespace Stand
 		void __fastcall received_clone_create(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, rage::NetworkObjectType object_type, uint16_t object_id, uint32_t sync_flags, rage::datBitBuffer* buffer, uint32_t timestamp);
 		__int64 __fastcall received_clone_sync(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, rage::NetworkObjectType object_type, uint16_t object_id, rage::datBitBuffer* buffer, uint32_t unk, uint32_t timestamp);
 		void __fastcall clone_pack(CNetworkObjectMgr* mgr, rage::netObject* netObject, CNetGamePlayer* recipient, rage::datBitBuffer* buffer);
-		//void __fastcall send_clone_create(rage::netObjectMgrBase* mgr, rage::netObject* obj, CNetGamePlayer* player, rage::datBitBuffer* buffer);
+		void __fastcall send_clone_create(rage::netObjectMgrBase* mgr, rage::netObject* obj, CNetGamePlayer* player, rage::datBitBuffer* buffer);
 		void __fastcall send_clone_sync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6);
 		//bool __fastcall send_clone_remove(CNetworkObjectMgr* mgr, rage::netObject* obj, CNetGamePlayer* player, char a4);
 		void rage_netSyncTree_Read(rage::netSyncTree* tree, rage::SyncType sync_type, uint32_t sync_flags, rage::datBitBuffer* buffer, rage::netLoggingInterface* logger);
@@ -402,7 +402,6 @@ namespace Stand
 		DetourHook clone_pack_hook;
 		DetourHook received_clone_create_hook;
 		DetourHook received_clone_sync_hook;
-		DetourHook send_clone_sync_hook;
 
 #if HAVE_SEND_CLONE_CREATE_HOOK
 		static constexpr auto footlettuce_model_from = ATSTRINGHASH("bkr_prop_biker_barstool_01");
@@ -421,8 +420,8 @@ namespace Stand
 		Blamer schizo_sync_blamer{ 5000 };
 		Blamer veh_appearance_sync_blamer{ 5000 };
 
-		//DetourHook send_clone_create_hook;
-		//DetourHook send_clone_sync_hook;
+		DetourHook send_clone_create_hook;
+		DetourHook send_clone_sync_hook;
 		//DetourHook send_clone_remove_hook;
 		DetourHook rage_netSyncTree_Read_hook;
 #ifdef STAND_DEV

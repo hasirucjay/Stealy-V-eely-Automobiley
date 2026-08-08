@@ -271,7 +271,7 @@ f("PF", received_clone_create_ack, 0) \
 f("PG", received_clone_sync_ack, 0) \
 f("PH", received_clone_remove_ack, 0) \
 f("PK", clone_pack, 0) \
-/*f("PL", send_clone_create, 0)*/ \
+f("PL", send_clone_create, 0) \
 f("PM", send_clone_sync, 0) \
 /*f("PN", send_clone_remove, 0)*/ \
 f("PO", rage_netSyncTree_Read, 0) \
@@ -5220,6 +5220,11 @@ namespace Stand::hooks
 	{
 		THREAD_NAME("Sync Send?");
 
+		if (ColoadMgr::coloading_with_any_menu)
+		{
+			return;
+		}
+
 		sync_src = player->player_id;
 
 		EventTally t(sync_src, FlowEvent::SYNCOUT_CLONE_CREATE);
@@ -5275,12 +5280,8 @@ namespace Stand::hooks
 	// rage::netObjectMgrMessageHandler::SendCloneSync
 	void __fastcall send_clone_sync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6)
 	{
-		// When coloading, Cherax sits in the hook chain and corrupts the call flow,
-		// producing garbled sync data that triggers false positives in P7 (model validation)
-		// and GlobalsWatcher (modded event detection). Pass through directly.
 		if (ColoadMgr::coloading_with_any_menu)
 		{
-			g_hooking.send_clone_sync_hook.getOriginal<decltype(&send_clone_sync)>()(mgr, player, obj, a4, a5, a6);
 			return;
 		}
 

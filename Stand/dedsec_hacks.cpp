@@ -90,7 +90,7 @@ namespace Stand
 #ifdef STAND_DEBUG // Until we patch it.
 		if (ent.getDriver() != g_player_ped)
 		{
-			TASK::TASK_ENTER_VEHICLE(g_player_ped, ent, 9999, -1, 1.0f, (1 << 1) | (1 << 3) | (1 << 4) | (1 << 9), nullptr, 0);
+			TASK::TASK_ENTER_VEHICLE(g_player_ped, ent, 9999, -1, 1.0f, (1 << 1) | (1 << 3) | (1 << 4) | (1 << 9), nullptr);
 		}
 #endif
 	}

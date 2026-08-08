@@ -1629,7 +1629,7 @@ namespace Stand
 		{
 			p = p.add(1).rip();
 			STORE_POINTER(CPlaySoundEvent_TriggerPos);
-			p = p.add(140);
+			p = p.add(156);
 			CHECK_EXISTING_HOOK("FA", "48 89 5C 24 08");
 			STORE_POINTER(CPlaySoundEvent_TriggerEnt);
 			p = p.add(0x00007FF638B809EB - 0x00007FF638B809D4).add(3).rip();
@@ -2105,7 +2105,7 @@ namespace Stand
 		BATCH_ADD_OPTIONAL_HOOK("PI", received_clone_create, "48 8B C4 66 44", "89 48 20 4C 89 40 18 48 89 48 08 53 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 68 44 0F B7 ? 24 D8 00 00 00");
 		BATCH_ADD_OPTIONAL_HOOK("PJ", received_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 4C 8B EA");
 		BATCH_ADD_OPTIONAL_HOOK("PK", clone_pack, "48 89 5c 24", "48 89 6c 24 ? 48 89 74 24 ? 57 48 83 ec ? 48 8b f9 48 8b ca 49 8b e9");
-		//BATCH_ADD_OPTIONAL_HOOK("PL", send_clone_create, "4C 8B DC 49 89", "5B 08 49 89 6B 18 49 89 73 20 57 41 54 41 55 41 56 41 57 48 83 EC 50 48 8B 02 4D 8B F8");
+		BATCH_ADD_OPTIONAL_HOOK("PL", send_clone_create, "4C 8B DC 49 89", "5B 08 49 89 6B 10 49 89 73 18 57 41 54 41 55 41 56 41 57 48 83 EC 50 80 7A 61 FF 41 0F");
 		BATCH_ADD_OPTIONAL_HOOK("PM", send_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 0F B6 ? ? 4D 8B E1 4D 8B F8 4C 8B EA 4C 8B F1 48 69 F6 C8 03 00 00");
 		//BATCH_ADD_OPTIONAL_HOOK("PN", send_clone_remove, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 30 41 80 78 ? FF 41 8A E9 49 8B F8 48 8B DA 48 8B F1 74");
 		BATCH_ADD_OPTIONAL_HOOK("PO", rage_netSyncTree_Read, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 20 44 89 40 18 57 48 83 EC 30 44 8B 05");
@@ -2524,7 +2524,7 @@ namespace Stand
 		// V7, V8, V9, & VA are used by ComponentDrawPatch
 		BATCH_ADD_MANDATORY_HOOK("VB", camFrame_copy, "48 89 5C 24 08", "57 48 83 EC 20 8B 42 40 F3 0F 10 4A 48");
 
-		BATCH_ADD_OPTIONAL_HOOK("X0", some_player_sync, "48 89 5C 24 10", "48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 B8 ? ? ? ? E8 ? ? ? ? 48 2B E0 48 8B FA 48 8B F1");
+		BATCH_ADD_OPTIONAL_HOOK("X0", some_player_sync, "48 89 5C 24 08", "55 56 57 41 54 41 55 41 56 41 57 B8 A0 E8 03 00 E8 ? ? ? ? 48 2B E0 48 8B FA 48 8B F1 E8 ? ? ? ? 45 33 ED 85 C0 0F 84 ? ? ? ? 48 8B 9F E8 00 00 00");
 		BATCH_ADD_OPTIONAL("X1", "0F 28 D6 48 8B D3 48 8B CF E8 ? ? ? ? 8B F0 EB 4F", [](soup::Pointer p)
 		{
 			p = p.add(10).rip();
