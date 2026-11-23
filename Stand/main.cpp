@@ -2346,7 +2346,7 @@ namespace Stand
 			pointers::g_rlPc = p.add(9).rip().as<rage::rlPc*>();
 		});
 		{
-			SIG_INST("8B 05 ? ? ? ? 4C 8D 15 ? ? ? ? 45 33 C0");
+			SIG_INST("8B 05 ? ? ? ? 41 FF C0 8B C8");
 			batch.add_optional("RA", soup::Module("socialclub.dll"), sig_inst, [](soup::Pointer p)
 			{
 				pointers::num_presence_attributes = p.add(2).rip().as<uint32_t*>();
